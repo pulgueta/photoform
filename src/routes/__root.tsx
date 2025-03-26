@@ -1,18 +1,35 @@
+import type { QueryClient } from "@tanstack/react-query";
 import {
   HeadContent,
   Outlet,
   Scripts,
-  createRootRoute,
+  createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
 import { Navbar } from "@/components/layout/navbar";
 import { NotFound } from "@/components/layout/not-found";
+import { queryKeys } from "@/constants/query-keys";
+import type { User } from "@/services/auth";
+import { getUser } from "@/services/auth";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@/utils/seo";
 
-export const Route = createRootRoute({
+interface RouteContext {
+  queryClient: QueryClient;
+  user: User;
+}
+
+export const Route = createRootRouteWithContext<RouteContext>()({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient.fetchQuery({
+      queryKey: [queryKeys.user],
+      queryFn: ({ signal }) => getUser({ signal }),
+    });
+
+    return { user };
+  },
   head: () => ({
     meta: [
       {
@@ -73,7 +90,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

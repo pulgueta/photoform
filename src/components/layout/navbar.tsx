@@ -22,14 +22,14 @@ export const Navbar = () => {
     <nav className="-translate-x-1/2 fixed top-4 left-1/2 flex h-14 w-[90%] transform items-center justify-between rounded-lg border border-white/20 bg-white/10 px-4 shadow-lg backdrop-blur-md md:w-[60%] lg:w-[50%]">
       <Link
         to="/"
-        className="font-extrabold text-2xl text-brand-foreground tracking-tighter drop-shadow-sm"
+        className="font-extrabold text-2xl text-white tracking-tighter drop-shadow-sm"
       >
         Photoform
       </Link>
       <div className="flex items-center space-x-2">
         {isPending ? (
           <AuthSkeleton />
-        ) : !data?.user ? (
+        ) : data?.user ? (
           <>
             <Button asChild size="sm" variant="brand">
               <Link to="/">Dashboard</Link>
@@ -58,11 +58,8 @@ export const Navbar = () => {
             <Button asChild variant="brand" size="sm">
               <Link to="/login">
                 <LogInIcon />
-                Login
+                Log in
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/login">Register</Link>
             </Button>
           </>
         )}
