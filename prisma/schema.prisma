@@ -100,7 +100,7 @@ model Form {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  FormField FormField[]
+  formFields FormField[]
 
   User   User   @relation(fields: [userId], references: [id])
   userId String

@@ -82,11 +82,12 @@ CREATE TABLE "form" (
     "id" TEXT NOT NULL,
     "uuid" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "fields" JSONB[],
     "responses" JSONB[],
-    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "form_pkey" PRIMARY KEY ("id")
 );

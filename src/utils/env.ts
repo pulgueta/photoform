@@ -15,3 +15,8 @@ export const env = createEnv({
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });
+
+export const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : env.VERCEL_PROJECT_PRODUCTION_URL;

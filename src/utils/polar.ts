@@ -25,3 +25,11 @@ export async function photoformPolarProducts(): Promise<
     slug: product.name.toLowerCase().replace(/ /g, "-"),
   }));
 }
+
+export async function getPhotoformPolarDiscounts() {
+  const discounts = await polar.discounts.list({
+    organizationId: env.POLAR_ORGANIZATION_ID,
+  });
+
+  return discounts.result.items;
+}

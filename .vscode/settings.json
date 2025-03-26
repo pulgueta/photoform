@@ -1,4 +1,5 @@
 {
+  "editor.wordWrap": "on",
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true
   },
@@ -33,8 +34,10 @@
   "emmet.showExpandedAbbreviation": "always",
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
+  "tailwindCSS.codeLens": true,
+  "tailwindCSS.experimental.configFile": "src/styles/app.css",
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ]
 }
