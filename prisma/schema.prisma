@@ -21,8 +21,10 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
-  role          Role      @default(USER)
-  Form          Form[]
+
+  passkeys Passkey[]
+  role     Role      @default(USER)
+  Form     Form[]
 
   @@map("user")
 }
@@ -72,19 +74,53 @@ model Verification {
   @@map("verification")
 }
 
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime?
+
+  @@map("passkey")
+}
+
 model Form {
   id        String   @id @unique @default(cuid())
   uuid      String   @unique @default(uuid())
   name      String
+  slug      String
+  fields    Json[]
+  responses Json[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id])
-  userId    String
+
+  FormField FormField[]
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
 
   @@map("form")
 }
 
+model FormField {
+  id        Int     @id @default(autoincrement())
+  label     String
+  fieldType String
+  required  Boolean @default(false)
+  form      Form    @relation(fields: [formId], references: [id])
+  formId    String
+
+  @@map("form_field")
+}
+
 enum Role {
   USER
+  PHOTOGRAPHER
   ADMIN
 }

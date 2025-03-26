@@ -1,6 +1,5 @@
 import {
   HeadContent,
-  Link,
   Outlet,
   Scripts,
   createRootRoute,
@@ -8,6 +7,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
+import { Navbar } from "@/components/layout/navbar";
 import { NotFound } from "@/components/layout/not-found";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@/utils/seo";
@@ -77,23 +77,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="flex gap-2 p-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>{" "}
-        </div>
-        <hr />
+      <body className="font-manrope">
+        <Navbar />
+
         {children}
+
         {process.env.NODE_ENV === "development" && (
           <TanStackRouterDevtools position="bottom-right" />
         )}
+
         <Scripts />
       </body>
     </html>
