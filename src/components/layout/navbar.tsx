@@ -19,10 +19,10 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="-translate-x-1/2 fixed top-4 left-1/2 flex h-14 w-[90%] transform items-center justify-between rounded-lg border border-white/20 bg-white/10 px-4 shadow-lg backdrop-blur-md md:w-[60%] lg:w-[50%]">
+    <nav className="-translate-x-1/2 fixed top-4 left-1/2 flex h-12 w-[90%] transform items-center justify-between rounded-lg border border-neutral-200 bg-neutral-100 px-4 shadow-sm backdrop-blur-md md:w-[60%] lg:w-[50%]">
       <Link
         to="/"
-        className="font-extrabold text-2xl text-white tracking-tighter drop-shadow-sm"
+        className="font-extrabold text-2xl text-primary tracking-tighter"
       >
         Photoform
       </Link>

@@ -14,7 +14,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <Card>
+    <Card className="w-full md:max-w-md">
       <CardHeader>
         <CardTitle className="text-balance text-center">
           Log in to unleash the power of AI photoshoots

@@ -1,3 +1,5 @@
+import { Suspense, lazy } from "react";
+
 import type { QueryClient } from "@tanstack/react-query";
 import {
   HeadContent,
@@ -5,7 +7,6 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
 import { Navbar } from "@/components/layout/navbar";
@@ -15,6 +16,15 @@ import type { User } from "@/services/auth";
 import { getUser } from "@/services/auth";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@/utils/seo";
+
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "development"
+    ? lazy(() =>
+        import("@tanstack/react-router-devtools").then((mod) => ({
+          default: mod.TanStackRouterDevtools,
+        })),
+      )
+    : () => null;
 
 interface RouteContext {
   queryClient: QueryClient;
@@ -99,10 +109,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
         {children}
 
-        {process.env.NODE_ENV === "development" && (
+        <Suspense>
           <TanStackRouterDevtools position="bottom-right" />
-        )}
-
+        </Suspense>
         <Scripts />
       </body>
     </html>
