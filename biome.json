@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["build", "public", "bun.lock", "routeTree.gen.ts"]
+    "ignore": [
+      "build",
+      "public",
+      "bun.lock",
+      "routeTree.gen.ts",
+      ".vercel",
+      ".output",
+      ".vinxi"
+    ]
   },
   "formatter": {
     "enabled": true,
