@@ -5,7 +5,7 @@ import { oneTap } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
 import { baseUrl, env } from "@/utils/env";
-import { photoformPolarProducts, polar as polarClient } from "@/utils/polar";
+import { betterAuthProducts, polar as polarClient } from "@/utils/polar";
 import { prisma } from "@/utils/prisma";
 
 const auth = betterAuth({
@@ -31,7 +31,11 @@ const auth = betterAuth({
       enableCustomerPortal: true,
       checkout: {
         enabled: true,
-        products: await photoformPolarProducts(),
+        products: await betterAuthProducts(),
+        successUrl: "/success?checkout_id={CHECKOUT_ID}",
+      },
+      webhooks: {
+        secret: env.POLAR_WEBHOOK_SECRET,
       },
     }),
   ],

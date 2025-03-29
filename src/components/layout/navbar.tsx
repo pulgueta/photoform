@@ -55,6 +55,14 @@ export const Navbar = () => {
           </>
         ) : (
           <>
+            <Button
+              asChild
+              variant="link"
+              size="sm"
+              className="text-primary-foreground"
+            >
+              <Link to="/pricing">Pricing</Link>
+            </Button>
             <Button asChild variant="brand" size="sm">
               <Link to="/login">
                 <LogInIcon />

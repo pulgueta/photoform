@@ -4,6 +4,8 @@ import { string } from "zod";
 
 export const env = createEnv({
   server: {
+    BETTER_AUTH_SECRET: string(),
+    BETTER_AUTH_URL: string().url(),
     DATABASE_URL: string().url(),
     POLAR_WEBHOOK_SECRET: string(),
     POLAR_ACCESS_TOKEN: string(),
