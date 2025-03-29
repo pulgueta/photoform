@@ -1,6 +1,6 @@
 import { createEnv } from "@t3-oss/env-core";
 import { vercel } from "@t3-oss/env-core/presets-zod";
-import { string } from "zod";
+import { string, enum as zodEnum } from "zod";
 
 export const env = createEnv({
   server: {
@@ -12,6 +12,7 @@ export const env = createEnv({
     POLAR_ORGANIZATION_ID: string(),
     GOOGLE_CLIENT_ID: string(),
     GOOGLE_CLIENT_SECRET: string(),
+    NODE_ENV: zodEnum(["development", "production"]).default("development"),
   },
   extends: [vercel()],
   runtimeEnv: process.env,
@@ -19,6 +20,6 @@ export const env = createEnv({
 });
 
 export const baseUrl =
-  process.env.NODE_ENV === "development"
+  env.NODE_ENV === "development"
     ? "http://localhost:3000"
     : env.VERCEL_PROJECT_PRODUCTION_URL;

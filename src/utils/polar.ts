@@ -10,6 +10,7 @@ interface BetterAuthPolarProduct {
 
 export const polar = new Polar({
   accessToken: env.POLAR_ACCESS_TOKEN,
+  server: env.NODE_ENV === "production" ? "production" : "sandbox",
 });
 
 export const polarSearchParams = object({
@@ -18,7 +19,6 @@ export const polarSearchParams = object({
 
 export async function betterAuthProducts(): Promise<BetterAuthPolarProduct[]> {
   const photophorm = await polar.products.list({
-    isRecurring: true,
     organizationId: env.POLAR_ORGANIZATION_ID,
   });
 
@@ -38,7 +38,6 @@ export async function getPhotoformPolarDiscounts() {
 
 export async function photoformPolarProducts() {
   const photophorm = await polar.products.list({
-    isRecurring: true,
     organizationId: env.POLAR_ORGANIZATION_ID,
   });
 

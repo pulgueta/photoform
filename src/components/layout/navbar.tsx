@@ -1,5 +1,3 @@
-import { useTransition } from "react";
-
 import { Link } from "@tanstack/react-router";
 import { Loader2Icon, LogInIcon, LogOutIcon } from "lucide-react";
 
@@ -8,15 +6,9 @@ import { signOut, useSession } from "@/lib/auth-client";
 import { AuthSkeleton } from "./skeleton/auth.skeleton";
 
 export const Navbar = () => {
-  const [pending, startTransition] = useTransition();
-
   const { data, isPending } = useSession();
 
-  const handleLogout = () => {
-    startTransition(() => {
-      signOut();
-    });
-  };
+  const { handleLogout, pending } = signOut();
 
   return (
     <nav className="-translate-x-1/2 fixed top-4 left-1/2 z-20 flex h-11 w-[90%] transform items-center justify-between rounded-xl border border-neutral-200/20 bg-neutral-900/60 px-4 shadow-sm backdrop-blur-md md:h-12 md:w-[60%] lg:w-[50%]">
@@ -27,7 +19,7 @@ export const Navbar = () => {
         Photoform
       </Link>
       <div className="flex items-center space-x-2">
-        {isPending ? (
+        {!isPending ? (
           <AuthSkeleton />
         ) : data?.user ? (
           <>

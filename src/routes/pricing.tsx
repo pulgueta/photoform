@@ -24,8 +24,6 @@ function RouteComponent() {
     initialData: initialPrices,
   });
 
-  console.dir(prices, { depth: Number.POSITIVE_INFINITY });
-
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
       {isLoading ? (

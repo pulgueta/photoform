@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-router";
 
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
-import { Navbar } from "@/components/layout/navbar";
 import { NotFound } from "@/components/layout/not-found";
 import { queryKeys } from "@/constants/query-keys";
 import type { User } from "@/services/auth";
@@ -105,8 +104,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-manrope">
-        <Navbar />
-
         {children}
 
         <Suspense>
