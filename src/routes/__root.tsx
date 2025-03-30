@@ -49,10 +49,10 @@ export const Route = createRootRouteWithContext<RouteContext>()({
         content: "width=device-width, initial-scale=1",
       },
       ...seo({
-        title:
-          "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
+        title: "Phormat - Elevate your photoshoots with AI recommendations",
         description:
-          "TanStack Start is a type-safe, client-first, full-stack React framework. ",
+          "Create AI portraits and get tips and recommendations for your next photoshoots with your clients.",
+        keywords: "AI, photoshoots, recommendations, portraits",
       }),
     ],
     links: [

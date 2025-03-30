@@ -1,7 +1,7 @@
 import { Polar } from "@polar-sh/sdk";
 import { object, string } from "zod";
 
-import { env } from "./env";
+import { env } from "./env.server";
 
 interface BetterAuthPolarProduct {
   productId: string;
@@ -9,8 +9,8 @@ interface BetterAuthPolarProduct {
 }
 
 export const polar = new Polar({
-  accessToken: env.POLAR_ACCESS_TOKEN,
-  server: env.NODE_ENV === "production" ? "production" : "sandbox",
+  accessToken: process.env.POLAR_ACCESS_TOKEN,
+  server: process.env.NODE_ENV === "production" ? "production" : "sandbox",
 });
 
 export const polarSearchParams = object({

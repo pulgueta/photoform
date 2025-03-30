@@ -16,7 +16,7 @@ export const Navbar = () => {
         to="/"
         className="font-extrabold text-2xl text-primary-foreground tracking-tighter"
       >
-        Photoform
+        Phormat
       </Link>
       <div className="flex items-center space-x-2">
         {!isPending ? (

@@ -8,20 +8,12 @@ type SidebarLink = {
 export const sidebarLinks: Record<Role, Array<SidebarLink>> = {
   PHOTOGRAPHER: [
     {
-      title: "Dashboard",
+      title: "My forms",
       href: "/dashboard",
     },
     {
-      title: "Photos",
-      href: "/dashboard/photos",
-    },
-    {
-      title: "Orders",
-      href: "/dashboard/orders",
-    },
-    {
-      title: "Settings",
-      href: "/dashboard/settings",
+      title: "Create new form",
+      href: "/dashboard/new",
     },
   ],
   ADMIN: [

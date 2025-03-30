@@ -4,12 +4,17 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { oneTap } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
-import { baseUrl, env } from "@/utils/env";
+import { env } from "@/utils/env.server";
 import { betterAuthProducts, polar as polarClient } from "@/utils/polar";
 import { prisma } from "@/utils/prisma";
 
+const baseURL =
+  env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : env.VERCEL_PROJECT_PRODUCTION_URL;
+
 const auth = betterAuth({
-  baseURL: baseUrl,
+  baseURL: baseURL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

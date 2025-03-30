@@ -123,7 +123,7 @@
 @layer base {
   :root {
     --brand: oklch(0.511 0.262 276.966);
-    --brand-foreground: oklch(81.58% 0.0854 289.62);
+    --brand-foreground: oklch(0.96 0 0);
     --brand-secondary: oklch(0.87 0.16 86.79 / 1);
     --brand-secondary-foreground: oklch(0.1 0 0);
     --background: oklch(1 0 0);
@@ -164,7 +164,7 @@
   }
   .dark {
     --brand: oklch(0.28 0.262 276.966);
-    --brand-foreground: oklch(0.39 0.262 276.966);
+    --brand-foreground: oklch(0.96 0 0);
     --brand-secondary: oklch(0.87 0.16 86.79 / 1);
     --brand-secondary-foreground: oklch(0.1 0 0);
     --background: oklch(0.1 0 0);

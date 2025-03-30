@@ -4,6 +4,7 @@ import { getCookie } from "@tanstack/react-start/server";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import {
   SIDEBAR_COOKIE_NAME,
+  SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
@@ -21,8 +22,6 @@ export const Route = createFileRoute("/dashboard")({
     };
   },
   beforeLoad: async ({ context }) => {
-    console.log(context);
-
     // if (!context.user) {
     //   throw redirect({
     //     to: "/login",
@@ -38,10 +37,11 @@ function DashboardLayout() {
     <SidebarProvider defaultOpen={defaultOpen}>
       <DashboardSidebar role={role} />
 
-      <main className="p-4">
+      <SidebarInset className="p-4">
         <SidebarTrigger />
+
         <Outlet />
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

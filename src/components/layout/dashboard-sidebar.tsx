@@ -29,9 +29,12 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({ role }) => {
   const links = sidebarLinks[role ?? "PHOTOGRAPHER"];
 
   return (
-    <Sidebar variant="floating" className="w-full max-w-3xs">
-      <SidebarHeader>
-        <Link to="/dashboard" className="font-bold text-xl tracking-tight">
+    <Sidebar variant="inset">
+      <SidebarHeader className="rounded-t-lg">
+        <Link
+          to="/dashboard"
+          className="text-center font-bold text-xl tracking-tight"
+        >
           Your Dashboard
         </Link>
       </SidebarHeader>

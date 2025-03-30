@@ -17,6 +17,8 @@ import { Route as LoginImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as DashboardNewImport } from './routes/dashboard/new'
+import { Route as DashboardFormFormIdImport } from './routes/dashboard/form.$formId'
 
 // Create/Update Routes
 
@@ -53,6 +55,18 @@ const IndexRoute = IndexImport.update({
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardNewRoute = DashboardNewImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardFormFormIdRoute = DashboardFormFormIdImport.update({
+  id: '/form/$formId',
+  path: '/form/$formId',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -95,11 +109,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuccessImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/new': {
+      id: '/dashboard/new'
+      path: '/new'
+      fullPath: '/dashboard/new'
+      preLoaderRoute: typeof DashboardNewImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof DashboardRouteImport
+    }
+    '/dashboard/form/$formId': {
+      id: '/dashboard/form/$formId'
+      path: '/form/$formId'
+      fullPath: '/dashboard/form/$formId'
+      preLoaderRoute: typeof DashboardFormFormIdImport
       parentRoute: typeof DashboardRouteImport
     }
   }
@@ -108,11 +136,15 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface DashboardRouteRouteChildren {
+  DashboardNewRoute: typeof DashboardNewRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardFormFormIdRoute: typeof DashboardFormFormIdRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardNewRoute: DashboardNewRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardFormFormIdRoute: DashboardFormFormIdRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -125,7 +157,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
+  '/dashboard/new': typeof DashboardNewRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -133,7 +167,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
+  '/dashboard/new': typeof DashboardNewRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
 
 export interface FileRoutesById {
@@ -143,7 +179,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
+  '/dashboard/new': typeof DashboardNewRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
 
 export interface FileRouteTypes {
@@ -154,9 +192,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/pricing'
     | '/success'
+    | '/dashboard/new'
     | '/dashboard/'
+    | '/dashboard/form/$formId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/pricing' | '/success' | '/dashboard'
+  to:
+    | '/'
+    | '/login'
+    | '/pricing'
+    | '/success'
+    | '/dashboard/new'
+    | '/dashboard'
+    | '/dashboard/form/$formId'
   id:
     | '__root__'
     | '/'
@@ -164,7 +211,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/pricing'
     | '/success'
+    | '/dashboard/new'
     | '/dashboard/'
+    | '/dashboard/form/$formId'
   fileRoutesById: FileRoutesById
 }
 
@@ -207,7 +256,9 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard/route.tsx",
       "children": [
-        "/dashboard/"
+        "/dashboard/new",
+        "/dashboard/",
+        "/dashboard/form/$formId"
       ]
     },
     "/login": {
@@ -219,8 +270,16 @@ export const routeTree = rootRoute
     "/success": {
       "filePath": "success.tsx"
     },
+    "/dashboard/new": {
+      "filePath": "dashboard/new.tsx",
+      "parent": "/dashboard"
+    },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/form/$formId": {
+      "filePath": "dashboard/form.$formId.tsx",
       "parent": "/dashboard"
     }
   }

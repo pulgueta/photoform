@@ -12,7 +12,6 @@ const SparklesCore = lazy(() =>
 
 export const Route = createFileRoute("/")({
   component: Home,
-  ssr: true,
 });
 
 function Home() {

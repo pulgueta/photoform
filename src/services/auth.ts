@@ -12,10 +12,13 @@ export const getUser = createServerFn().handler(async () => {
     headers: webRequest?.headers!,
   });
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       email: session?.user.email,
       id: session?.user.id,
+    },
+    omit: {
+      password: true,
     },
     cacheStrategy: {
       ttl: 60,
