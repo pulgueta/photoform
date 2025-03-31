@@ -1,11 +1,20 @@
 import type { FC } from "react";
 
 import type { Form } from "@prisma/client";
+import { Link } from "@tanstack/react-router";
 
 import { timeAgo } from "@/utils/format";
-import { Link } from "@tanstack/react-router";
 import { XIcon } from "lucide-react";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Paragraph } from "./ui/typography";
 
 interface FormCardProps {
@@ -13,24 +22,22 @@ interface FormCardProps {
 }
 
 export const FormCard: FC<FormCardProps> = ({ form }) => (
-  <article className="rounded border p-4">
-    <header className="flex items-start justify-between">
+  <Card>
+    <CardHeader className="flex flex-row items-start justify-between">
       <div>
-        <Paragraph variant="body" weight="semibold">
-          {form.name}
-        </Paragraph>
-        <p>{form.slug}</p>
+        <CardTitle>{form.name}</CardTitle>
+        <CardDescription>{form.slug}</CardDescription>
       </div>
       <Button variant="destructive" size="icon">
         <XIcon className="size-4" />
         <span className="sr-only">Delete form</span>
       </Button>
-    </header>
-    <div className="mt-4 flex items-center justify-between">
+    </CardHeader>
+    <CardContent className="flex items-center justify-between">
       <Paragraph>{form.fields.length} fields</Paragraph>
 
       {!form.isAnswered && (
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" size="sm">
           <Link
             to="/dashboard/form/$formId"
             params={{
@@ -41,9 +48,13 @@ export const FormCard: FC<FormCardProps> = ({ form }) => (
           </Link>
         </Button>
       )}
-    </div>
-    <footer className="mt-4 border-t pt-2">
+    </CardContent>
+
+    <CardFooter className="justify-between">
       <Paragraph>Created: {timeAgo(form.createdAt)}</Paragraph>
-    </footer>
-  </article>
+      <Badge variant={form.isAnswered ? "default" : "warning"}>
+        {form.isAnswered ? "Published" : "Draft"}
+      </Badge>
+    </CardFooter>
+  </Card>
 );

@@ -37,7 +37,7 @@ function DashboardLayout() {
     <SidebarProvider defaultOpen={defaultOpen}>
       <DashboardSidebar role={role} />
 
-      <SidebarInset className="p-4">
+      <SidebarInset className="bg-secondary p-4 text-secondary-foreground">
         <SidebarTrigger />
 
         <Outlet />

@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
+import { Heading, Paragraph } from "@/components/ui/typography";
 
 const SparklesCore = lazy(() =>
   import("@/components/particles").then((mod) => ({
@@ -18,9 +19,9 @@ function Home() {
   return (
     <main>
       <header className="landing-gradient flex min-h-[calc(100dvh-4rem)] w-full flex-col items-center justify-center gap-4 p-4">
-        <h1 className="z-20 scroll-m-20 text-balance text-center font-bold text-3xl text-primary-foreground tracking-tighter md:text-5xl lg:text-6xl">
+        <Heading className="z-20 text-primary-foreground">
           Elevate your photoshoots with AI recommendations
-        </h1>
+        </Heading>
         <Suspense>
           <SparklesCore
             background="transparent"
@@ -31,15 +32,11 @@ function Home() {
             particleColor="#FFFFFF"
           />
         </Suspense>
-        <p className="z-20 text-pretty text-center">
+        <Paragraph variant="body" center className="z-20">
           Create AI portraits and get tips and recommendations for your next
           photoshoots with your clients.
-        </p>
-        <Button
-          variant="brand"
-          className="z-20 mx-auto w-full max-w-max"
-          asChild
-        >
+        </Paragraph>
+        <Button className="z-20 mx-auto w-full max-w-max" asChild>
           <Link to="/dashboard">Launch your first form now!</Link>
         </Button>
       </header>
