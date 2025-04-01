@@ -36,7 +36,7 @@ const auth = betterAuth({
       enableCustomerPortal: true,
       checkout: {
         enabled: true,
-        products: await betterAuthProducts(),
+        products: betterAuthProducts().then((products) => products).then,
         successUrl: "/success?checkout_id={CHECKOUT_ID}",
       },
       webhooks: {

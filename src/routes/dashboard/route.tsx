@@ -1,23 +1,16 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { getCookie } from "@tanstack/react-start/server";
 
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import {
-  SIDEBAR_COOKIE_NAME,
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getUser } from "@/services/auth";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
-  loader: async () => {
-    const sidebarCookie = getCookie(SIDEBAR_COOKIE_NAME);
-    const user = await getUser();
-
+  loader: async ({ context: { user } }) => {
     return {
-      defaultOpen: sidebarCookie === "true",
       role: user?.role,
     };
   },
@@ -31,10 +24,10 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardLayout() {
-  const { defaultOpen, role } = Route.useLoaderData();
+  const { role } = Route.useLoaderData();
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider>
       <DashboardSidebar role={role} />
 
       <SidebarInset className="bg-secondary p-4 text-secondary-foreground">

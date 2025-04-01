@@ -1,9 +1,11 @@
-import type { HTMLInputTypeAttribute } from "react";
+import type { HTMLInputTypeAttribute, JSX } from "react";
 import { useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
+import { BadgeCheck, ChevronDown, Image, Radio, Type } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +32,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Heading, Paragraph } from "@/components/ui/typography";
-import { toast } from "sonner";
 
 type FormFieldType = {
   id: string;
@@ -86,6 +87,15 @@ function FormBuilder() {
   const { watch } = saveForm;
   const formTitle = watch("title");
   const formDescription = watch("description");
+
+  const fieldIcons: Record<string, JSX.Element> = {
+    text: <Type />,
+    textarea: <Type />,
+    dropdown: <ChevronDown />,
+    radio: <Radio />,
+    checkbox: <BadgeCheck />,
+    image: <Image />,
+  };
 
   // Function to save the form to database (mocked)
   const handleSaveForm = (values: z.infer<typeof formBuilderSchema>) => {
@@ -204,12 +214,12 @@ function FormBuilder() {
 
       <div className="flex flex-col gap-4 md:flex-row">
         {/* Field Types Panel */}
-        <Card className="flex-shrink-0 md:w-52 lg:w-64">
+        <Card className="w-full flex-shrink-0 md:mx-auto md:w-64 lg:w-full lg:max-w-xs">
           <CardHeader className="p-3 sm:p-4">
             <CardTitle className="text-base sm:text-lg">Field Types</CardTitle>
           </CardHeader>
           <CardContent className="p-3 sm:p-4">
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-1 md:gap-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
                   "text",
@@ -222,12 +232,12 @@ function FormBuilder() {
               ).map((type) => (
                 <Button
                   key={type}
-                  onClick={() => addField(type)}
                   variant="outline"
-                  size="sm"
-                  className="justify-start text-xs sm:text-sm"
+                  className="flex h-full flex-col items-center justify-center gap-2"
+                  onClick={() => addField(type)}
                 >
-                  <span className="mr-1">+</span>
+                  <p className="text-xl">{fieldIcons[type]}</p>
+
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </Button>
               ))}
@@ -303,9 +313,9 @@ function FormBuilder() {
             </TabsList>
 
             <TabsContent value="edit">
-              <div className="grid gap-2 grid-cols-2 sm:grid-cols-1 xl:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 xl:grid-cols-3">
                 {fields.length === 0 ? (
-                  <div className="rounded-lg border border-dashed p-4 text-center col-span-3">
+                  <div className="col-span-3 rounded-lg border border-dashed p-4 text-center">
                     <p className="text-muted-foreground text-sm">
                       Start by adding fields from the panel
                     </p>

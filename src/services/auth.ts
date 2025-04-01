@@ -1,10 +1,12 @@
+import { cache } from "react";
+
 import { createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 
 import { api } from "@/lib/auth";
 import { prisma } from "@/utils/prisma";
 
-export const getUser = createServerFn().handler(async () => {
+const getCurrentSession = cache(async () => {
   const webRequest = getWebRequest();
 
   const session = await api.getSession({
@@ -12,10 +14,16 @@ export const getUser = createServerFn().handler(async () => {
     headers: webRequest?.headers!,
   });
 
+  return session;
+});
+
+export const getUser = createServerFn().handler(async () => {
+  const session = await getCurrentSession();
+
   const user = await prisma.user.findFirst({
     where: {
-      email: session?.user.email,
       id: session?.user.id,
+      email: session?.user.email,
     },
     omit: {
       password: true,

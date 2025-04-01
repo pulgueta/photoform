@@ -91,15 +91,17 @@ model Passkey {
 }
 
 model Form {
-  id         String   @id @unique @default(cuid())
-  uuid       String   @unique @default(uuid())
-  name       String
-  slug       String
-  fields     Json[]
-  responses  Json[]
-  isAnswered Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @unique @default(cuid())
+  uuid        String   @unique @default(uuid())
+  name        String
+  slug        String
+  fields      Json[]
+  responses   Json[]
+  isPublished Boolean  @default(false)
+  isAnswered  Boolean  @default(false)
+  shareUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   formFields FormField[]
 
