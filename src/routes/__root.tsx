@@ -42,10 +42,6 @@ export const Route = createRootRouteWithContext<RouteContext>()({
   head: () => ({
     meta: [
       {
-        httpEquiv: "Content-Security-Policy",
-        content: `script-src 'self' ${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://phorm.netlify.app;"}`,
-      },
-      {
         charSet: "utf-8",
       },
       {
@@ -106,6 +102,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="script-src 'self' 'unsafe-inline' https://phorm.netlify.app;"
+        />
       </head>
       <body className="font-manrope">
         {children}

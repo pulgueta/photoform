@@ -14,11 +14,5 @@ export default defineConfig({
         projects: ["./tsconfig.json"],
       }),
     ],
-    esbuild: {
-      target: "esnext",
-      supported: {
-        "top-level-await": true,
-      },
-    },
   },
 });
