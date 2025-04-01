@@ -1,8 +1,11 @@
 # Welcome to TanStack.com!
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/b3bf97b8-ceb7-429d-963b-fe5d2916ece3/deploy-status)](https://app.netlify.com/sites/phorm/deploys)
+
 This site is built with TanStack Router!
 
 - [TanStack Router Docs](https://tanstack.com/router)
+
 
 It's deployed automagically with Netlify!
 

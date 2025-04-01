@@ -1,4 +1,4 @@
-import type { HTMLInputTypeAttribute, JSX } from "react";
+import type { HTMLInputTypeAttribute } from "react";
 import { useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -158,36 +158,16 @@ function FormBuilder() {
 
   // Create dynamic form schema based on fields
   const createFormSchema = () => {
-    const schemaFields: Record<string, any> = {};
+    const schemaFields: Record<
+      string,
+      z.ZodString | z.ZodOptional<z.ZodString>
+    > = {};
 
     for (const field of fields) {
       let fieldSchema = z.string();
 
-      if (field.required) {
-        fieldSchema = fieldSchema.min(1, {
-          message: field.validation?.message || "This field is required",
-        });
-      } else {
+      if (!field.required) {
         fieldSchema = fieldSchema.optional();
-      }
-
-      if (field.type === "text" || field.type === "textarea") {
-        if (field.validation?.minLength) {
-          fieldSchema = fieldSchema.min(field.validation.minLength, {
-            message: `Minimum ${field.validation.minLength} characters required`,
-          });
-        }
-        if (field.validation?.maxLength) {
-          fieldSchema = fieldSchema.max(field.validation.maxLength, {
-            message: `Maximum ${field.validation.maxLength} characters allowed`,
-          });
-        }
-        if (field.validation?.pattern) {
-          fieldSchema = fieldSchema.regex(
-            new RegExp(field.validation.pattern),
-            { message: field.validation.message || "Invalid format" },
-          );
-        }
       }
 
       schemaFields[field.id] = fieldSchema;
@@ -198,12 +178,12 @@ function FormBuilder() {
 
   // Form for the form preview/submission
   const formSchema = createFormSchema();
-  const formPreview = useForm<any>({
+  const formPreview = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: answers as any,
+    defaultValues: answers,
   });
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted with values:", values);
     toast.success("Form submitted successfully", {
       description: "Thank you for submitting the form",
@@ -218,10 +198,8 @@ function FormBuilder() {
           Create your custom form by adding and configuring fields
         </Paragraph>
       </header>
-
-      <div className="flex flex-col gap-4 md:flex-row">
-        {/* Field Types Panel */}
-        <Card className="w-full flex-shrink-0 md:mx-auto md:w-64 lg:w-full lg:max-w-xs">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="w-full flex-shrink-0 md:row-span-1 lg:col-span-1 lg:w-full">
           <CardHeader>
             <CardTitle className="text-base sm:text-lg">Field Types</CardTitle>
             <CardDescription>
@@ -246,192 +224,187 @@ function FormBuilder() {
                   className="flex h-full flex-col items-center justify-center gap-2"
                   onClick={() => addField(type)}
                 >
-                  <p className="text-xl">{fieldIcons[type]}</p>
+                  {fieldIcons[type]}
 
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  <span className="text-base xl:text-xs">
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </span>
                 </Button>
               ))}
             </div>
           </CardContent>
         </Card>
-
-        {/* Main Content Area */}
-        <div className="min-w-0 flex-grow space-y-4">
-          {/* Form Title and Description */}
-
-          <div className="rounded-lg border bg-background p-4">
-            <Form {...saveForm}>
-              <form
-                className="space-y-3"
-                onSubmit={saveForm.handleSubmit(handleSaveForm)}
-              >
-                <FormField
-                  control={saveForm.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input {...field} placeholder="Form Title" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={saveForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Textarea {...field} placeholder="Form Description" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button fullWidth disabled={fields.length === 0}>
-                  Save
-                </Button>
-              </form>
-            </Form>
-          </div>
-
-          {/* Tabs for Edit/Preview */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="edit">Editor</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="edit">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 xl:grid-cols-3">
-                {fields.length === 0 ? (
-                  <div className="col-span-3 rounded-lg border border-dashed p-4 text-center">
-                    <p className="text-muted-foreground text-sm">
-                      Start by adding fields from the panel
-                    </p>
-                  </div>
-                ) : (
-                  fields.map((field) => (
-                    <Card
-                      key={field.id}
-                      className={`cursor-pointer transition-all ${
-                        selectedField?.id === field.id
-                          ? "ring-2 ring-primary"
-                          : ""
-                      }`}
-                      onClick={() => setSelectedField(field)}
-                    >
-                      <CardContent className="flex items-center justify-between p-3">
-                        <div className="min-w-0 truncate">
-                          <p className="truncate font-medium text-sm">
-                            {field.label}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {field.type} {field.required && "• Required"}
-                          </p>
-                        </div>
-                        <div className="ml-2 flex flex-shrink-0 gap-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-2 text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedField(field);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="h-7 px-2 text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteField(field.id);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+        <div className="rounded-lg border bg-background p-4 lg:row-start-2">
+          <Form {...saveForm}>
+            <form
+              className="space-y-3"
+              onSubmit={saveForm.handleSubmit(handleSaveForm)}
+            >
+              <FormField
+                control={saveForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input {...field} placeholder="Form Title" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </TabsContent>
+              />
 
-            <TabsContent value="preview" className="pt-3">
-              <Card>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-xl">{formTitle}</CardTitle>
-                  {formDescription && (
-                    <p className="mt-1 text-sm">{formDescription}</p>
-                  )}
-                </CardHeader>
-                <CardContent className="p-4">
-                  <Form {...formPreview}>
-                    <form
-                      onSubmit={formPreview.handleSubmit(handleSubmit)}
-                      className="space-y-4"
-                    >
-                      {fields.map((field) => (
-                        <FormField
-                          key={field.id}
-                          control={formPreview.control}
-                          name={field.id}
-                          render={({ field: formField }) => (
-                            <FormItem className="space-y-1.5">
-                              <FormLabel className="text-sm">
-                                {field.label}
-                                {field.required && (
-                                  <span className="ml-1 text-red-500">*</span>
-                                )}
-                              </FormLabel>
-                              <FormControl>
-                                <FormFieldPreview
-                                  field={field}
-                                  formField={formField}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                      {fields.length > 0 && (
-                        <Button type="submit" className="mt-4 w-full">
-                          Submit Form
+              <FormField
+                control={saveForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Form Description" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button fullWidth disabled={fields.length === 0}>
+                Save
+              </Button>
+            </form>
+          </Form>
+        </div>
+
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="md:col-span-2 lg:col-start-2"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="edit">Editor</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="edit">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 xl:grid-cols-3">
+              {fields.length === 0 ? (
+                <div className="col-span-3 rounded-lg border border-dashed p-4 text-center">
+                  <p className="text-muted-foreground text-sm">
+                    Start by adding fields from the panel
+                  </p>
+                </div>
+              ) : (
+                fields.map((field) => (
+                  <Card
+                    key={field.id}
+                    className={`cursor-pointer transition-all ${
+                      selectedField?.id === field.id
+                        ? "ring-2 ring-primary"
+                        : ""
+                    }`}
+                    onClick={() => setSelectedField(field)}
+                  >
+                    <CardContent className="flex items-center justify-between p-3">
+                      <div className="min-w-0 truncate">
+                        <p className="truncate font-medium text-sm">
+                          {field.label}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {field.type} {field.required && "• Required"}
+                        </p>
+                      </div>
+                      <div className="ml-2 flex flex-shrink-0 gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedField(field);
+                          }}
+                        >
+                          Edit
                         </Button>
-                      )}
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="h-7 px-2 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteField(field.id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
 
-          {/* Field Settings */}
-          {selectedField && activeTab === "edit" && (
+          <TabsContent value="preview" className="pt-3">
             <Card>
-              <CardHeader className="p-3 pb-0 sm:p-4">
-                <CardTitle className="text-base sm:text-lg">
-                  Field Settings
-                </CardTitle>
+              <CardHeader className="p-4">
+                <CardTitle className="text-xl">{formTitle}</CardTitle>
+                {formDescription && (
+                  <p className="mt-1 text-sm">{formDescription}</p>
+                )}
               </CardHeader>
-              <CardContent className="p-3 sm:p-4">
-                <FieldEditor field={selectedField} onUpdate={updateField} />
+              <CardContent className="p-4">
+                <Form {...formPreview}>
+                  <form
+                    onSubmit={formPreview.handleSubmit(handleSubmit)}
+                    className="space-y-4"
+                  >
+                    {fields.map((field) => (
+                      <FormField
+                        key={field.id}
+                        control={formPreview.control}
+                        name={field.id}
+                        render={({ field: formField }) => (
+                          <FormItem className="space-y-1.5">
+                            <FormLabel className="text-sm">
+                              {field.label}
+                              {field.required && (
+                                <span className="ml-1 text-red-500">*</span>
+                              )}
+                            </FormLabel>
+                            <FormControl>
+                              <FormFieldPreview
+                                field={field}
+                                formField={formField}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                    {fields.length > 0 && (
+                      <Button type="submit" className="mt-4 w-full">
+                        Submit Form
+                      </Button>
+                    )}
+                  </form>
+                </Form>
               </CardContent>
             </Card>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* Field Settings */}
+        {selectedField && activeTab === "edit" && (
+          <Card className="lg:col-span-2">
+            <CardHeader className="p-3 pb-0 sm:p-4">
+              <CardTitle className="text-base sm:text-lg">
+                Field Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4">
+              <FieldEditor field={selectedField} onUpdate={updateField} />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
@@ -445,7 +418,7 @@ function FieldEditor({
 
   const handleChange = (
     prop: string,
-    value: string | boolean | string[] | number | Record<string, any>,
+    value: string | boolean | string[] | number,
   ) => {
     const updated = { ...localField };
 
@@ -534,13 +507,16 @@ function FieldEditor({
           <Label className="text-sm">Options</Label>
           <div className="space-y-1.5">
             {localField.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-1">
+              <div
+                key={`${field.id}-option-${index}`}
+                className="flex items-center space-x-1"
+              >
                 <Input
                   type="text"
                   value={option}
                   className="text-sm"
                   onChange={(e) => {
-                    const newOptions = [...localField.options!];
+                    const newOptions = [...(localField.options || [])];
                     newOptions[index] = e.target.value;
                     handleChange("options", newOptions);
                   }}
@@ -566,95 +542,16 @@ function FieldEditor({
             variant="outline"
             className="text-xs"
             onClick={() =>
-              handleChange("options", [...localField.options!, "New Option"])
+              handleChange("options", [
+                ...(localField.options || []),
+                "New Option",
+              ])
             }
           >
             Add Option
           </Button>
         </div>
       )}
-
-      {/* Validation Fields */}
-      {["text", "textarea"].includes(field.type) && (
-        <div className="space-y-3 border-t pt-2">
-          <Label className="font-medium text-sm">Validation</Label>
-
-          <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="min-length" className="text-xs">
-                  Min Length
-                </Label>
-                <Input
-                  id="min-length"
-                  type="number"
-                  min="0"
-                  className="text-sm"
-                  value={localField.validation?.minLength || ""}
-                  onChange={(e) =>
-                    handleChange(
-                      "validation.minLength",
-                      e.target.value ? Number(e.target.value) : 1,
-                    )
-                  }
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="max-length" className="text-xs">
-                  Max Length
-                </Label>
-                <Input
-                  id="max-length"
-                  type="number"
-                  min="0"
-                  className="text-sm"
-                  value={localField.validation?.maxLength || ""}
-                  onChange={(e) =>
-                    handleChange(
-                      "validation.maxLength",
-                      e.target.value ? Number(e.target.value) : 500,
-                    )
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="pattern" className="text-xs">
-                Pattern (Regex)
-              </Label>
-              <Input
-                id="pattern"
-                type="text"
-                className="text-sm"
-                value={localField.validation?.pattern || ""}
-                onChange={(e) =>
-                  handleChange("validation.pattern", e.target.value)
-                }
-                placeholder="e.g. ^[A-Za-z]+$"
-              />
-              <p className="text-muted-foreground text-xs">
-                Regular expression pattern for validation
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-1 border-t pt-2">
-        <Label htmlFor="error-message" className="text-sm">
-          Error Message
-        </Label>
-        <Input
-          id="error-message"
-          type="text"
-          className="text-sm"
-          value={localField.validation?.message || ""}
-          onChange={(e) => handleChange("validation.message", e.target.value)}
-          placeholder="Custom error message"
-        />
-      </div>
 
       <div className="flex items-center space-x-2 pt-1">
         <Checkbox
@@ -675,7 +572,7 @@ function FormFieldPreview({
   formField,
 }: {
   field: FormFieldType;
-  formField: any;
+  formField: { value: string; onChange: (value: string) => void };
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -703,7 +600,7 @@ function FormFieldPreview({
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    formField.onChange(file);
+    formField.onChange(file.name);
   };
 
   const clearImage = () => {
@@ -721,21 +618,23 @@ function FormFieldPreview({
     case "text":
       return (
         <Input
-          {...formField}
           type="text"
           placeholder={field.placeholder}
           className="text-sm"
           required={field.required}
+          value={formField.value}
+          onChange={(e) => formField.onChange(e.target.value)}
         />
       );
 
     case "textarea":
       return (
         <Textarea
-          {...formField}
           placeholder={field.placeholder}
           className="min-h-[80px] text-sm"
           required={field.required}
+          value={formField.value}
+          onChange={(e) => formField.onChange(e.target.value)}
         />
       );
 
@@ -750,8 +649,8 @@ function FormFieldPreview({
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
-            {field.options?.map((option, index) => (
-              <SelectItem key={index} value={option} className="text-sm">
+            {field.options?.map((option) => (
+              <SelectItem key={option} value={option} className="text-sm">
                 {option}
               </SelectItem>
             ))}
@@ -767,14 +666,14 @@ function FormFieldPreview({
           className="space-y-1"
           required={field.required}
         >
-          {field.options?.map((option, index) => (
-            <div key={index} className="flex items-center space-x-2">
+          {field.options?.map((option) => (
+            <div key={option} className="flex items-center space-x-2">
               <RadioGroupItem
                 value={option}
-                id={`${field.id}-option-${index}`}
+                id={`${field.id}-option-${option}`}
               />
               <Label
-                htmlFor={`${field.id}-option-${index}`}
+                htmlFor={`${field.id}-option-${option}`}
                 className="text-sm"
               >
                 {option}

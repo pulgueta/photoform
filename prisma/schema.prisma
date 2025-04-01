@@ -11,20 +11,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @unique @default(cuid())
-  email         String    @unique
+  id            String        @id @unique @default(cuid())
+  email         String        @unique
   password      String?
   name          String
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  subscription  Subscription?
+  Form          Form[]
+  role          Role          @default(PHOTOGRAPHER)
 
+  sessions Session[]
+  accounts Account[]
   passkeys Passkey[]
-  role     Role      @default(PHOTOGRAPHER)
-  Form     Form[]
 
   @@map("user")
 }
@@ -122,8 +123,28 @@ model FormField {
   @@map("form_field")
 }
 
+model Subscription {
+  id             String             @id @unique @default(cuid())
+  user           User               @relation(fields: [userId], references: [id])
+  userId         String             @unique
+  status         SubscriptionStatus @default(FREE)
+  polarProductId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("subscription")
+}
+
 enum Role {
   USER
   PHOTOGRAPHER
   ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  FREE
+  CANCELLED
+  PENDING
 }

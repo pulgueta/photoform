@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vinxi dev --host",
+    "deploy": "bun run generate:prod && bun run migrate:prod && bun run build",
     "build": "vinxi build",
     "start": "vinxi start",
     "lint": "biome lint --write --unsafe .",
