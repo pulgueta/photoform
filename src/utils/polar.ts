@@ -9,6 +9,7 @@ interface BetterAuthPolarProduct {
 }
 
 export const polar = new Polar({
+  // Keep track to see if this causes any issues by trying to access server environment variables from the client
   accessToken: process.env.POLAR_ACCESS_TOKEN,
   server: process.env.NODE_ENV === "production" ? "production" : "sandbox",
 });

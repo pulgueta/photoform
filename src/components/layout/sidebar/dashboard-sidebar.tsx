@@ -2,9 +2,7 @@ import type { FC } from "react";
 
 import type { Role } from "@prisma/client";
 import { Link } from "@tanstack/react-router";
-import { LogOutIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -18,13 +16,15 @@ import {
 } from "@/components/ui/sidebar";
 import { sidebarLinks } from "@/constants/sidebar-links";
 import { useSession } from "@/lib/auth-client";
+import { ProfileSkeleton } from "../skeleton/auth.skeleton";
+import { AuthProfile } from "./auth-profile";
 
 interface DashboardSidebarProps {
   role: Role | undefined;
 }
 
 export const DashboardSidebar: FC<DashboardSidebarProps> = ({ role }) => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, isPending } = useSession();
 
   const links = sidebarLinks[role ?? "PHOTOGRAPHER"];
 
@@ -53,14 +53,10 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({ role }) => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      {sessionData?.user && (
-        <SidebarFooter>
-          <Button variant="destructive">
-            <LogOutIcon size={16} />
-            Salir
-          </Button>
-        </SidebarFooter>
-      )}
+      <SidebarFooter>
+        {isPending && <ProfileSkeleton />}
+        {sessionData?.user && <AuthProfile user={sessionData.user} />}
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

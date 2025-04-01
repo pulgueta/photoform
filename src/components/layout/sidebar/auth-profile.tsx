@@ -1,0 +1,102 @@
+import type { FC } from "react";
+import { useTransition } from "react";
+
+import { Link, redirect } from "@tanstack/react-router";
+import type { User } from "better-auth";
+import { LogOutIcon } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { Paragraph, paragraphVariants } from "@/components/ui/typography";
+import { signOut } from "@/lib/auth-client";
+
+interface AuthProfileProps {
+  user: User | undefined;
+}
+
+export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
+  const [pending, startTransition] = useTransition();
+
+  const handleLogout = () => {
+    startTransition(() => {
+      signOut();
+    });
+  };
+
+  const initials = user?.name
+    .split(" ")
+    .map((name) => name[0])
+    .join("")
+    .slice(0, 2);
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <div className="flex items-center space-x-4 rounded-lg bg-tertiary p-2 text-tertiary-foreground shadow-xs transition-colors hover:bg-primary/20">
+          <Avatar>
+            <AvatarImage
+              src={user?.image ?? ""}
+              alt={`Profile picture of ${user?.name}`}
+            />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div>
+            <Paragraph className="pointer-events-none" variant="sub1">
+              {user?.name}
+            </Paragraph>
+            <Paragraph className="pointer-events-none" muted variant="xs">
+              {user?.email}
+            </Paragraph>
+          </div>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="space-y-2.5">
+        <div className="flex items-center space-x-4 rounded-md border border-border/20 bg-secondary p-3">
+          <Avatar>
+            <AvatarImage
+              src={user?.image ?? ""}
+              alt={`Profile picture of ${user?.name}`}
+            />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div>
+            <Paragraph variant="sub1">{user?.name}</Paragraph>
+            <Paragraph muted variant="xs">
+              {user?.email}
+            </Paragraph>
+          </div>
+        </div>
+
+        <Separator className="bg-background/20" />
+
+        <div className="flex items-center justify-between">
+          <Paragraph>Current plan:</Paragraph>
+          <Paragraph variant="xs">Free</Paragraph>
+        </div>
+
+        <Link to="/dashboard" className={paragraphVariants()}>
+          Account settings
+        </Link>
+
+        <Separator className="my-2 bg-background/20" />
+
+        <Button variant="destructive" fullWidth onClick={handleLogout}>
+          {pending ? (
+            "Logging out..."
+          ) : (
+            <>
+              <LogOutIcon />
+              Logout
+            </>
+          )}
+        </Button>
+      </PopoverContent>
+    </Popover>
+  );
+};

@@ -9,7 +9,13 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -65,6 +71,8 @@ const formBuilderSchema = z.object({
 
 export const Route = createFileRoute("/dashboard/new")({
   component: FormBuilder,
+  pendingComponent: () => <div>Loading...</div>,
+  ssr: false,
 });
 
 function FormBuilder() {
@@ -79,8 +87,8 @@ function FormBuilder() {
   const saveForm = useForm<z.infer<typeof formBuilderSchema>>({
     resolver: zodResolver(formBuilderSchema),
     defaultValues: {
-      title: "Untitled Form",
-      description: "",
+      title: crypto.randomUUID().replaceAll("-", ""),
+      description: crypto.randomUUID().replaceAll("-", ""),
     },
   });
 
@@ -88,7 +96,7 @@ function FormBuilder() {
   const formTitle = watch("title");
   const formDescription = watch("description");
 
-  const fieldIcons: Record<string, JSX.Element> = {
+  const fieldIcons = {
     text: <Type />,
     textarea: <Type />,
     dropdown: <ChevronDown />,
@@ -108,8 +116,7 @@ function FormBuilder() {
     // Mock DB call
     console.log("Saving form to database:", formConfig);
 
-    toast({
-      title: "Form saved",
+    toast.success("Form saved", {
       description: `Form "${values.title}" has been saved successfully.`,
     });
   };
@@ -215,11 +222,14 @@ function FormBuilder() {
       <div className="flex flex-col gap-4 md:flex-row">
         {/* Field Types Panel */}
         <Card className="w-full flex-shrink-0 md:mx-auto md:w-64 lg:w-full lg:max-w-xs">
-          <CardHeader className="p-3 sm:p-4">
+          <CardHeader>
             <CardTitle className="text-base sm:text-lg">Field Types</CardTitle>
+            <CardDescription>
+              Add different types of fields to your form
+            </CardDescription>
           </CardHeader>
-          <CardContent className="p-3 sm:p-4">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <CardContent>
+            <div className="grid grid-cols-2 gap-2">
               {(
                 [
                   "text",
@@ -248,58 +258,45 @@ function FormBuilder() {
         {/* Main Content Area */}
         <div className="min-w-0 flex-grow space-y-4">
           {/* Form Title and Description */}
-          <Card>
-            <CardContent className="p-3 sm:p-4">
-              <Form {...saveForm}>
-                <form
-                  className="space-y-3"
-                  onSubmit={saveForm.handleSubmit(handleSaveForm)}
-                >
-                  <FormField
-                    control={saveForm.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="border-0 px-0 text-center font-bold text-xl focus-visible:ring-0"
-                            placeholder="Form Title"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
-                  <FormField
-                    control={saveForm.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            className="h-12 resize-none border-0 px-0 text-center text-sm focus-visible:ring-0"
-                            placeholder="Form Description"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <div className="rounded-lg border bg-background p-4">
+            <Form {...saveForm}>
+              <form
+                className="space-y-3"
+                onSubmit={saveForm.handleSubmit(handleSaveForm)}
+              >
+                <FormField
+                  control={saveForm.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input {...field} placeholder="Form Title" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={fields.length === 0}
-                  >
-                    Save Form
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+                <FormField
+                  control={saveForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea {...field} placeholder="Form Description" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button fullWidth disabled={fields.length === 0}>
+                  Save
+                </Button>
+              </form>
+            </Form>
+          </div>
 
           {/* Tabs for Edit/Preview */}
           <Tabs

@@ -9,9 +9,7 @@ import { betterAuthProducts, polar as polarClient } from "@/utils/polar";
 import { prisma } from "@/utils/prisma";
 
 const baseURL =
-  env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : env.VERCEL_PROJECT_PRODUCTION_URL;
+  env.NODE_ENV === "development" ? "http://localhost:3000" : env.URL;
 
 const auth = betterAuth({
   baseURL: baseURL,

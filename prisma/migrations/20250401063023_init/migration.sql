@@ -5,13 +5,13 @@ CREATE TYPE "Role" AS ENUM ('USER', 'PHOTOGRAPHER', 'ADMIN');
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "name" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL,
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'USER',
+    "role" "Role" NOT NULL DEFAULT 'PHOTOGRAPHER',
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -85,6 +85,9 @@ CREATE TABLE "form" (
     "slug" TEXT NOT NULL,
     "fields" JSONB[],
     "responses" JSONB[],
+    "isPublished" BOOLEAN NOT NULL DEFAULT false,
+    "isAnswered" BOOLEAN NOT NULL DEFAULT false,
+    "shareUrl" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,

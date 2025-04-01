@@ -1,3 +1,5 @@
+import { redirect } from "@tanstack/react-router";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "@/lib/auth-client";
@@ -6,11 +8,21 @@ export const LoginForm = () => {
   const googleLogin = async () => {
     const res = await signIn.social({
       provider: "google",
+      callbackURL: "/dashboard",
     });
   };
 
   const passkeyLogin = async () => {
-    await signIn.passkey();
+    await signIn.passkey({
+      fetchOptions: {
+        onSuccess: () => {
+          redirect({
+            to: "/dashboard",
+            replace: true,
+          });
+        },
+      },
+    });
   };
 
   return (

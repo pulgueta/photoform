@@ -80,12 +80,13 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   },
 );
 
-const paragraphVariants = cva("text-pretty font-medium", {
+export const paragraphVariants = cva("text-pretty font-medium", {
   variants: {
     variant: {
       sub1: "text-base",
       body: "text-lg leading-6",
       sm: "text-sm",
+      xs: "text-xs",
     },
     weight: {
       black: "font-black",

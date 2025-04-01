@@ -1,5 +1,5 @@
 import { createEnv } from "@t3-oss/env-core";
-import { vercel } from "@t3-oss/env-core/presets-zod";
+import { netlify } from "@t3-oss/env-core/presets-zod";
 import { string, enum as zodEnum } from "zod";
 
 export const env = createEnv({
@@ -14,7 +14,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: string(),
     NODE_ENV: zodEnum(["development", "production"]).default("development"),
   },
-  extends: [vercel()],
+  extends: [netlify()],
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });

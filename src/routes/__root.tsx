@@ -14,6 +14,7 @@ import { queryKeys } from "@/constants/query-keys";
 import type { User } from "@/services/auth";
 import { getUser } from "@/services/auth";
 import appCss from "@/styles/app.css?url";
+import { env } from "@/utils/env.server";
 import { seo } from "@/utils/seo";
 
 const TanStackRouterDevtools =
@@ -98,13 +99,16 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const url =
+    process.env.NODE_ENV === "development" ? "http://localhost:3000" : env.URL;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <meta
-          http-equiv="Content-Security-Policy"
-          content="script-src 'self' 'unsafe-inline' https://phorm.netlify.app;"
+          httpEquiv="Content-Security-Policy"
+          content={`script-src 'self' 'unsafe-inline' ${url} https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' ${url} https://accounts.google.com;`}
         />
       </head>
       <body className="font-manrope">

@@ -1,6 +1,6 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
+import { DashboardSidebar } from "@/components/layout/sidebar/dashboard-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
@@ -15,11 +15,11 @@ export const Route = createFileRoute("/dashboard")({
     };
   },
   beforeLoad: async ({ context }) => {
-    // if (!context.user) {
-    //   throw redirect({
-    //     to: "/login",
-    //   });
-    // }
+    if (!context.user) {
+      throw redirect({
+        to: "/login",
+      });
+    }
   },
 });
 
