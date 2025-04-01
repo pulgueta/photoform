@@ -6,6 +6,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { FormBuilderProvider } from "@/context/form-builder-context";
 import { getUserSubscriptionStatus } from "@/services/user";
 
 export const Route = createFileRoute("/dashboard")({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/dashboard")({
     });
 
     return {
-      role: user?.role,
+      user,
       subscription,
     };
   },
@@ -33,16 +34,18 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardLayout() {
-  const { role, subscription } = Route.useLoaderData();
+  const { user, subscription } = Route.useLoaderData();
 
   return (
     <SidebarProvider>
-      <DashboardSidebar role={role} subscription={subscription} />
+      <DashboardSidebar user={user} subscription={subscription} />
 
       <SidebarInset className="bg-secondary p-4 text-secondary-foreground">
         <SidebarTrigger />
 
-        <Outlet />
+        <FormBuilderProvider>
+          <Outlet />
+        </FormBuilderProvider>
       </SidebarInset>
     </SidebarProvider>
   );

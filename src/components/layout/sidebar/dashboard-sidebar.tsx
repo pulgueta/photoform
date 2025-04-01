@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import type { Role, SubscriptionStatus } from "@prisma/client";
+import type { SubscriptionStatus } from "@prisma/client";
 import { Link } from "@tanstack/react-router";
 
 import {
@@ -16,21 +16,22 @@ import {
 } from "@/components/ui/sidebar";
 import { sidebarLinks } from "@/constants/sidebar-links";
 import { useSession } from "@/lib/auth-client";
+import type { User } from "@/services/user";
 import { ProfileSkeleton } from "../skeleton/auth.skeleton";
 import { AuthProfile } from "./auth-profile";
 
 interface DashboardSidebarProps {
-  role: Role | undefined;
+  user: User | undefined;
   subscription: SubscriptionStatus | undefined;
 }
 
 export const DashboardSidebar: FC<DashboardSidebarProps> = ({
-  role,
+  user,
   subscription,
 }) => {
-  const { data: sessionData, isPending } = useSession();
+  const { isPending } = useSession();
 
-  const links = sidebarLinks[role ?? "PHOTOGRAPHER"];
+  const links = sidebarLinks[user?.role ?? "PHOTOGRAPHER"];
 
   return (
     <Sidebar variant="inset">
@@ -58,9 +59,10 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {isPending && <ProfileSkeleton />}
-        {sessionData?.user && (
-          <AuthProfile user={sessionData.user} subscription={subscription} />
+        {isPending ? (
+          <ProfileSkeleton />
+        ) : (
+          user && <AuthProfile user={user} subscription={subscription} />
         )}
       </SidebarFooter>
       <SidebarRail />

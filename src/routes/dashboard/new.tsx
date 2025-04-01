@@ -1,22 +1,15 @@
-import type { HTMLInputTypeAttribute } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
-import { BadgeCheck, ChevronDown, Image, Radio, Type } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { Badge } from "@/components/ui/badge";
+import { BuilderTypes } from "@/components/layout/builder/builder-types";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -39,37 +32,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Heading, Paragraph } from "@/components/ui/typography";
+import type { BuilderFormField } from "@/context/form-builder-context";
+import {
+  useFormBuilderActions,
+  useFormBuilderFields,
+} from "@/context/form-builder-context";
+import { cn } from "@/lib/utils";
 import { getUserSubscriptionStatus } from "@/services/user";
-
-type FormFieldType = {
-  id: string;
-  type: HTMLInputTypeAttribute;
-  label: string;
-  placeholder?: string;
-  options?: string[];
-  required?: boolean;
-  acceptedFileTypes?: string;
-  maxFileSizeMB?: number;
-  validation?: {
-    minLength?: number;
-    maxLength?: number;
-    pattern?: string;
-    message?: string;
-  };
-};
-
-type FormBuilderConfig = {
-  id?: string;
-  title: string;
-  description: string;
-  fields: FormFieldType[];
-};
-
-// Schema for saving the form
-const formBuilderSchema = z.object({
-  title: z.string().min(1, { message: "Form title is required" }),
-  description: z.string().optional(),
-});
 
 export const Route = createFileRoute("/dashboard/new")({
   component: FormBuilder,
@@ -81,113 +50,69 @@ export const Route = createFileRoute("/dashboard/new")({
     }),
   }),
   pendingComponent: () => <div>Loading...</div>,
-  ssr: false,
 });
 
 function FormBuilder() {
-  const { subscription } = Route.useLoaderData();
-
-  const [fields, setFields] = useState<FormFieldType[]>([]);
-  const [selectedField, setSelectedField] = useState<FormFieldType | null>(
+  const [selectedField, setSelectedField] = useState<BuilderFormField | null>(
     null,
   );
-  const [answers, setAnswers] = useState<Record<string, string | File>>({});
+  const [answers] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState("edit");
 
-  // Form for saving the form configuration
-  const saveForm = useForm<z.infer<typeof formBuilderSchema>>({
-    resolver: zodResolver(formBuilderSchema),
-    defaultValues: {
-      title: crypto.randomUUID().replaceAll("-", ""),
-      description: crypto.randomUUID().replaceAll("-", ""),
-    },
-  });
+  const { subscription } = Route.useLoaderData();
 
-  const { watch } = saveForm;
-  const formTitle = watch("title");
-  const formDescription = watch("description");
+  const fields = useFormBuilderFields();
+  const { updateField, removeField } = useFormBuilderActions();
 
-  const fieldIcons = {
-    text: <Type />,
-    textarea: <Type />,
-    dropdown: <ChevronDown />,
-    radio: <Radio />,
-    checkbox: <BadgeCheck />,
-    image: <Image />,
-  };
-
-  const freeUserFields: HTMLInputTypeAttribute[] = [
-    "text",
-    "textarea",
-    "radio",
-    "checkbox",
-  ] as const;
-
-  const proUserFields: HTMLInputTypeAttribute[] = [
-    ...freeUserFields,
-    "image",
-  ] as const;
-
-  // Function to save the form to database (mocked)
-  const handleSaveForm = (values: z.infer<typeof formBuilderSchema>) => {
-    const formConfig: FormBuilderConfig = {
-      title: values.title,
-      description: values.description || "",
-      fields,
-    };
-
-    // Mock DB call
-    console.log("Saving form to database:", formConfig);
-
-    toast.success("Form saved", {
-      description: `Form "${values.title}" has been saved successfully.`,
-    });
-  };
-
-  const addField = (type: FormFieldType["type"]) => {
-    const newField: FormFieldType = {
-      id: `field-${Date.now()}`,
-      type,
-      label: `New ${type} Field`,
-      ...(type === "dropdown" || type === "radio"
-        ? { options: ["Option 1"] }
-        : {}),
-      ...(type === "image"
-        ? {
-            acceptedFileTypes: "image/*",
-            maxFileSizeMB: 5,
-          }
-        : {}),
-      validation: {
-        message: "This field is required",
-      },
-    };
-    setFields([...fields, newField]);
-    setSelectedField(newField);
-    setActiveTab("edit");
-  };
-
-  const updateField = (updatedField: FormFieldType) => {
-    setFields(fields.map((f) => (f.id === updatedField.id ? updatedField : f)));
+  const handleUpdateField = (updatedField: BuilderFormField) => {
+    if (
+      updatedField.type === "checkbox" &&
+      updatedField.isMultiSelect &&
+      !updatedField.options
+    ) {
+      updatedField.options = ["Option 1"];
+    }
+    updateField(updatedField);
     setSelectedField(updatedField);
   };
 
-  const deleteField = (fieldId: string) => {
-    setFields(fields.filter((f) => f.id !== fieldId));
-    if (selectedField?.id === fieldId) {
+  const handleDeleteField = (fieldId: string) => {
+    const field = fields.find((f) => f.id === fieldId);
+    if (field) {
+      removeField(field);
       setSelectedField(null);
+      // If this was the last field, switch to preview tab
+      if (fields.length <= 1) {
+        setActiveTab("preview");
+      }
     }
   };
 
   // Create dynamic form schema based on fields
   const createFormSchema = () => {
-    const schemaFields: Record<
-      string,
-      z.ZodString | z.ZodOptional<z.ZodString>
-    > = {};
+    const schemaFields: Record<string, z.ZodTypeAny> = {};
 
     for (const field of fields) {
-      let fieldSchema = z.string();
+      let fieldSchema: z.ZodTypeAny;
+
+      switch (field.type) {
+        case "checkbox":
+          if (field.isMultiSelect) {
+            fieldSchema = z.array(z.string()).transform((val) => val.join(","));
+          } else {
+            fieldSchema = z.boolean().transform((val) => val.toString());
+          }
+          break;
+        case "image":
+          fieldSchema = z
+            .any()
+            .refine((val) => val instanceof File || typeof val === "string", {
+              message: "Must be a file or a string",
+            });
+          break;
+        default:
+          fieldSchema = z.string();
+      }
 
       if (!field.required) {
         fieldSchema = fieldSchema.optional();
@@ -199,7 +124,6 @@ function FormBuilder() {
     return z.object(schemaFields);
   };
 
-  // Form for the form preview/submission
   const formSchema = createFormSchema();
   const formPreview = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -213,86 +137,27 @@ function FormBuilder() {
     });
   };
 
+  const handleFieldClick = (field: BuilderFormField) => {
+    setSelectedField(field);
+    setActiveTab("edit");
+  };
+
   return (
     <div>
-      <header className="mb-4 sm:mb-6">
-        <Heading as="h2">Form builder</Heading>
-        <Paragraph muted>
-          Create your custom form by adding and configuring fields
-        </Paragraph>
+      <header className="mb-4 flex items-center justify-between sm:mb-6">
+        <div>
+          <Heading as="h2">Form builder</Heading>
+          <Paragraph muted>
+            Create your custom form by adding and configuring fields
+          </Paragraph>
+        </div>
       </header>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="w-full flex-shrink-0 md:row-span-1 lg:col-span-1 lg:w-full">
-          <CardHeader>
-            <CardTitle className="text-base sm:text-lg">Field Types</CardTitle>
-            <CardDescription>
-              Add different types of fields to your form
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-2">
-              {proUserFields.map((type) => (
-                <Button
-                  key={type}
-                  variant="outline"
-                  className="relative flex h-full flex-col items-center justify-center gap-2"
-                  disabled={
-                    subscription === "FREE" && !freeUserFields.includes(type)
-                  }
-                  onClick={() => addField(type)}
-                >
-                  {fieldIcons[type]}
-                  <span className="text-base xl:text-xs">
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </span>
-
-                  {subscription === "FREE" &&
-                    !freeUserFields.includes(type) && (
-                      <Badge className="-left-2 absolute top-0">Pro</Badge>
-                    )}
-                </Button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <div className="rounded-lg border bg-background p-4 lg:row-start-2">
-          <Form {...saveForm}>
-            <form
-              className="space-y-3"
-              onSubmit={saveForm.handleSubmit(handleSaveForm)}
-            >
-              <FormField
-                control={saveForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input {...field} placeholder="Form Title" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={saveForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Textarea {...field} placeholder="Form Description" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button fullWidth disabled={fields.length === 0}>
-                Save
-              </Button>
-            </form>
-          </Form>
-        </div>
+        <BuilderTypes
+          setActiveTab={setActiveTab}
+          setSelectedField={setSelectedField}
+          subscription={subscription}
+        />
 
         <Tabs
           value={activeTab}
@@ -300,7 +165,9 @@ function FormBuilder() {
           className="md:col-span-2 lg:col-start-2"
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="edit">Editor</TabsTrigger>
+            <TabsTrigger value="edit" disabled={fields.length === 0}>
+              Editor
+            </TabsTrigger>
             <TabsTrigger value="preview">Preview</TabsTrigger>
           </TabsList>
 
@@ -316,12 +183,10 @@ function FormBuilder() {
                 fields.map((field) => (
                   <Card
                     key={field.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedField?.id === field.id
-                        ? "ring-2 ring-primary"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedField(field)}
+                    className={cn("cursor-pointer transition-all", {
+                      "ring-2 ring-primary": selectedField?.id === field.id,
+                    })}
+                    onClick={() => handleFieldClick(field)}
                   >
                     <CardContent className="flex items-center justify-between p-3">
                       <div className="min-w-0 truncate">
@@ -332,30 +197,18 @@ function FormBuilder() {
                           {field.type} {field.required && "• Required"}
                         </p>
                       </div>
-                      <div className="ml-2 flex flex-shrink-0 gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 px-2 text-xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedField(field);
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="h-7 px-2 text-xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteField(field.id);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
+
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteField(field.id);
+                        }}
+                      >
+                        <Trash2Icon className="size-4" />
+                        <span className="sr-only">Delete</span>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))
@@ -365,12 +218,6 @@ function FormBuilder() {
 
           <TabsContent value="preview" className="pt-3">
             <Card>
-              <CardHeader className="p-4">
-                <CardTitle className="text-xl">{formTitle}</CardTitle>
-                {formDescription && (
-                  <p className="mt-1 text-sm">{formDescription}</p>
-                )}
-              </CardHeader>
               <CardContent className="p-4">
                 <Form {...formPreview}>
                   <form
@@ -393,7 +240,21 @@ function FormBuilder() {
                             <FormControl>
                               <FormFieldPreview
                                 field={field}
-                                formField={formField}
+                                formField={{
+                                  value: formField.value?.toString() || "",
+                                  onChange: (value) => {
+                                    if (field.type === "checkbox") {
+                                      formField.onChange(value === "true");
+                                    } else if (
+                                      field.type === "image" &&
+                                      value instanceof File
+                                    ) {
+                                      formField.onChange(value);
+                                    } else {
+                                      formField.onChange(value);
+                                    }
+                                  },
+                                }}
                               />
                             </FormControl>
                             <FormMessage />
@@ -413,16 +274,16 @@ function FormBuilder() {
           </TabsContent>
         </Tabs>
 
-        {/* Field Settings */}
-        {selectedField && activeTab === "edit" && (
-          <Card className="lg:col-span-2">
+        {/* Only show field settings if there are fields and one is selected */}
+        {selectedField && activeTab === "edit" && fields.length > 0 && (
+          <Card className="lg:col-span-3 lg:col-start-2">
             <CardHeader className="p-3 pb-0 sm:p-4">
               <CardTitle className="text-base sm:text-lg">
                 Field Settings
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 sm:p-4">
-              <FieldEditor field={selectedField} onUpdate={updateField} />
+              <FieldEditor field={selectedField} onUpdate={handleUpdateField} />
             </CardContent>
           </Card>
         )}
@@ -434,7 +295,7 @@ function FormBuilder() {
 function FieldEditor({
   field,
   onUpdate,
-}: { field: FormFieldType; onUpdate: (field: FormFieldType) => void }) {
+}: { field: BuilderFormField; onUpdate: (field: BuilderFormField) => void }) {
   const [localField, setLocalField] = useState(field);
 
   const handleChange = (
@@ -447,7 +308,14 @@ function FieldEditor({
       const [parent, child] = prop.split(".");
       updated[parent] = { ...updated[parent], [child]: value };
     } else {
-      updated[prop] = value;
+      if (prop === "isMultiSelect") {
+        updated.isMultiSelect = value as boolean;
+        if (value && !updated.options) {
+          updated.options = ["Option 1"];
+        }
+      } else {
+        updated[prop] = value;
+      }
     }
 
     setLocalField(updated);
@@ -481,6 +349,79 @@ function FieldEditor({
             onChange={(e) => handleChange("placeholder", e.target.value)}
             className="text-sm"
           />
+        </div>
+      )}
+
+      {(field.type === "dropdown" ||
+        field.type === "radio" ||
+        field.type === "checkbox") && (
+        <div className="space-y-3">
+          {field.type === "checkbox" && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="field-multi-select"
+                checked={!!localField.isMultiSelect}
+                onCheckedChange={(checked) =>
+                  handleChange("isMultiSelect", !!checked)
+                }
+              />
+              <Label htmlFor="field-multi-select" className="text-sm">
+                Allow multiple selections
+              </Label>
+            </div>
+          )}
+
+          {(field.type !== "checkbox" || localField.isMultiSelect) && (
+            <>
+              <Label className="text-sm">Options</Label>
+              <div className="space-y-1.5">
+                {localField.options?.map((option, index) => (
+                  <div
+                    key={`${field.id}-option-${index}`}
+                    className="flex items-center space-x-1"
+                  >
+                    <Input
+                      type="text"
+                      value={option}
+                      className="text-sm"
+                      onChange={(e) => {
+                        const newOptions = [...(localField.options || [])];
+                        newOptions[index] = e.target.value;
+                        handleChange("options", newOptions);
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 flex-shrink-0 px-2 text-xs"
+                      onClick={() =>
+                        handleChange(
+                          "options",
+                          localField.options?.filter((_, i) => i !== index) ||
+                            [],
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs"
+                onClick={() =>
+                  handleChange("options", [
+                    ...(localField.options || []),
+                    "New Option",
+                  ])
+                }
+              >
+                Add Option
+              </Button>
+            </>
+          )}
         </div>
       )}
 
@@ -523,57 +464,6 @@ function FieldEditor({
         </div>
       )}
 
-      {(field.type === "dropdown" || field.type === "radio") && (
-        <div className="space-y-3">
-          <Label className="text-sm">Options</Label>
-          <div className="space-y-1.5">
-            {localField.options?.map((option, index) => (
-              <div
-                key={`${field.id}-option-${index}`}
-                className="flex items-center space-x-1"
-              >
-                <Input
-                  type="text"
-                  value={option}
-                  className="text-sm"
-                  onChange={(e) => {
-                    const newOptions = [...(localField.options || [])];
-                    newOptions[index] = e.target.value;
-                    handleChange("options", newOptions);
-                  }}
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 flex-shrink-0 px-2 text-xs"
-                  onClick={() =>
-                    handleChange(
-                      "options",
-                      localField.options?.filter((_, i) => i !== index) || [],
-                    )
-                  }
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-xs"
-            onClick={() =>
-              handleChange("options", [
-                ...(localField.options || []),
-                "New Option",
-              ])
-            }
-          >
-            Add Option
-          </Button>
-        </div>
-      )}
-
       <div className="flex items-center space-x-2 pt-1">
         <Checkbox
           id="field-required"
@@ -592,8 +482,11 @@ function FormFieldPreview({
   field,
   formField,
 }: {
-  field: FormFieldType;
-  formField: { value: string; onChange: (value: string) => void };
+  field: BuilderFormField;
+  formField: {
+    value: string;
+    onChange: (value: string | boolean | File | string[]) => void;
+  };
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -607,13 +500,17 @@ function FormFieldPreview({
       field.acceptedFileTypes &&
       !file.type.match(field.acceptedFileTypes.replace("*", ".*"))
     ) {
-      alert(`Please select a valid file type (${field.acceptedFileTypes})`);
+      toast.error(
+        `Please select a valid file type (${field.acceptedFileTypes})`,
+      );
       return;
     }
 
     // Check file size
     if (field.maxFileSizeMB && file.size > field.maxFileSizeMB * 1024 * 1024) {
-      alert(`File size exceeds the maximum limit of ${field.maxFileSizeMB}MB`);
+      toast.error(
+        `File size exceeds the maximum limit of ${field.maxFileSizeMB}MB`,
+      );
       return;
     }
 
@@ -621,7 +518,7 @@ function FormFieldPreview({
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    formField.onChange(file.name);
+    formField.onChange(file);
   };
 
   const clearImage = () => {
@@ -634,6 +531,15 @@ function FormFieldPreview({
     }
     formField.onChange("");
   };
+
+  useEffect(() => {
+    // Cleanup preview URL when component unmounts
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   switch (field.type) {
     case "text":
@@ -705,6 +611,35 @@ function FormFieldPreview({
       );
 
     case "checkbox":
+      if (field.isMultiSelect && field.options) {
+        const selectedValues = formField.value
+          ? formField.value.split(",").filter(Boolean)
+          : [];
+
+        return (
+          <div className="space-y-2">
+            {field.options.map((option) => (
+              <div key={option} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`${field.id}-${option}`}
+                  checked={selectedValues.includes(option)}
+                  onCheckedChange={(checked) => {
+                    const newValues = checked
+                      ? [...selectedValues, option]
+                      : selectedValues.filter((val) => val !== option);
+                    formField.onChange(newValues.join(","));
+                  }}
+                  required={field.required && selectedValues.length === 0}
+                />
+                <Label htmlFor={`${field.id}-${option}`} className="text-sm">
+                  {option}
+                </Label>
+              </div>
+            ))}
+          </div>
+        );
+      }
+
       return (
         <div className="flex items-center space-x-2">
           <Checkbox

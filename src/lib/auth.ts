@@ -4,7 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { oneTap } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 
-import { clientEnv } from "@/utils/env.client";
+import { app_url } from "@/constants/keys";
 import { env } from "@/utils/env.server";
 import {
   betterAuthProducts,
@@ -13,11 +13,8 @@ import {
 } from "@/utils/polar";
 import { prisma } from "@/utils/prisma";
 
-const baseURL =
-  env.NODE_ENV === "development" ? clientEnv.VITE_BASE_URL : env.URL;
-
 const auth = betterAuth({
-  baseURL: baseURL,
+  baseURL: app_url,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -33,13 +30,8 @@ const auth = betterAuth({
 
           await prisma.subscription.create({
             data: {
-              user: {
-                connect: {
-                  id: user.id,
-                },
-              },
               polarProductId: productId ?? "",
-              status: "FREE",
+              userId: user.id,
             },
           });
         },

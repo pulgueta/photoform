@@ -6,15 +6,17 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
+  useRouterState,
 } from "@tanstack/react-router";
 
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
+import { Navbar } from "@/components/layout/navbar";
 import { NotFound } from "@/components/layout/not-found";
+import { app_url } from "@/constants/keys";
 import { queryKeys } from "@/constants/query-keys";
 import type { User } from "@/services/user";
 import { getUser } from "@/services/user";
 import appCss from "@/styles/app.css?url";
-import { env } from "@/utils/env.server";
 import { seo } from "@/utils/seo";
 
 const TanStackRouterDevtools =
@@ -40,50 +42,43 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 
     return { user };
   },
-  head: () => {
-    const url =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : env.URL;
-
-    return {
-      meta: [
-        {
-          charSet: "utf-8",
-        },
-        {
-          httpEquiv: "Content-Security-Policy",
-          content: `script-src 'self' 'unsafe-inline' ${url} https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' ${url} https://accounts.google.com;`,
-        },
-        {
-          name: "viewport",
-          content: "width=device-width, initial-scale=1",
-        },
-        ...seo({
-          title: "Phormat - Elevate your photoshoots with AI recommendations",
-          description:
-            "Create AI portraits and get tips and recommendations for your next photoshoots with your clients.",
-          keywords: "AI, photoshoots, recommendations, portraits",
-        }),
-      ],
-      links: [
-        { rel: "stylesheet", href: appCss },
-        {
-          rel: "apple-touch-icon",
-          sizes: "180x180",
-          href: "/apple-touch-icon.png",
-        },
-        {
-          rel: "icon",
-          type: "image/png",
-          sizes: "196x196",
-          href: "/favicon-196.png",
-        },
-        { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
-        { rel: "icon", href: "/favicon-196.png", type: "image/png" },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        httpEquiv: "Content-Security-Policy",
+        content: `script-src 'self' 'unsafe-inline' ${app_url} https://accounts.google.com; script-src-elem 'self' 'unsafe-inline' ${app_url} https://accounts.google.com;`,
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      ...seo({
+        title: "Phormat - Elevate your photoshoots with AI recommendations",
+        description:
+          "Create AI portraits and get tips and recommendations for your next photoshoots with your clients.",
+        keywords: "AI, photoshoots, recommendations, portraits",
+      }),
+    ],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "196x196",
+        href: "/favicon-196.png",
+      },
+      { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
+      { rel: "icon", href: "/favicon-196.png", type: "image/png" },
+    ],
+  }),
   errorComponent: (props) => {
     return (
       <RootDocument>
@@ -104,12 +99,21 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { user } = Route.useRouteContext();
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+
+  const showNavbar =
+    !pathname.startsWith("/dashboard") || !pathname.startsWith("/form");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body className="font-manrope">
+        {showNavbar && <Navbar user={user} />}
+
         {children}
 
         <Suspense>

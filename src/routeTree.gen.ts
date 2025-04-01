@@ -17,6 +17,7 @@ import { Route as LoginImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as DashboardSettingsImport } from './routes/dashboard/settings'
 import { Route as DashboardNewImport } from './routes/dashboard/new'
 import { Route as DashboardFormFormIdImport } from './routes/dashboard/form.$formId'
 
@@ -55,6 +56,12 @@ const IndexRoute = IndexImport.update({
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+
+const DashboardSettingsRoute = DashboardSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
 
@@ -116,6 +123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardNewImport
       parentRoute: typeof DashboardRouteImport
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsImport
+      parentRoute: typeof DashboardRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -137,12 +151,14 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteRouteChildren {
   DashboardNewRoute: typeof DashboardNewRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardFormFormIdRoute: typeof DashboardFormFormIdRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardNewRoute: DashboardNewRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardFormFormIdRoute: DashboardFormFormIdRoute,
 }
@@ -158,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
   '/dashboard/new': typeof DashboardNewRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
@@ -168,6 +185,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
   '/dashboard/new': typeof DashboardNewRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
@@ -180,6 +198,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/success': typeof SuccessRoute
   '/dashboard/new': typeof DashboardNewRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/form/$formId': typeof DashboardFormFormIdRoute
 }
@@ -193,6 +212,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/success'
     | '/dashboard/new'
+    | '/dashboard/settings'
     | '/dashboard/'
     | '/dashboard/form/$formId'
   fileRoutesByTo: FileRoutesByTo
@@ -202,6 +222,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/success'
     | '/dashboard/new'
+    | '/dashboard/settings'
     | '/dashboard'
     | '/dashboard/form/$formId'
   id:
@@ -212,6 +233,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/success'
     | '/dashboard/new'
+    | '/dashboard/settings'
     | '/dashboard/'
     | '/dashboard/form/$formId'
   fileRoutesById: FileRoutesById
@@ -257,6 +279,7 @@ export const routeTree = rootRoute
       "filePath": "dashboard/route.tsx",
       "children": [
         "/dashboard/new",
+        "/dashboard/settings",
         "/dashboard/",
         "/dashboard/form/$formId"
       ]
@@ -272,6 +295,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/new": {
       "filePath": "dashboard/new.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/settings": {
+      "filePath": "dashboard/settings.tsx",
       "parent": "/dashboard"
     },
     "/dashboard/": {

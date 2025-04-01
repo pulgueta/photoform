@@ -10,16 +10,16 @@ export const getUserSubscriptionStatus = createServerFn()
   .middleware([authMiddleware])
   .validator(zodValidator(userIdSchema))
   .handler(async ({ context: { user } }) => {
-    const userSubscriptionStatus = await prisma.user.findFirst({
+    const userSubscriptionStatus = await prisma.subscription.findFirst({
       where: {
-        id: user.id,
+        userId: user.id,
       },
-      include: {
-        subscription: true,
+      cacheStrategy: {
+        ttl: 60,
       },
     });
 
-    return userSubscriptionStatus?.subscription?.status;
+    return userSubscriptionStatus?.status;
   });
 
 export const getUser = createServerFn().handler(async () => {
