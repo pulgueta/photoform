@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { useTransition } from "react";
 
+import type { SubscriptionStatus } from "@prisma/client";
 import { Link, redirect } from "@tanstack/react-router";
 import type { User } from "better-auth";
 import { LogOutIcon } from "lucide-react";
@@ -18,14 +19,24 @@ import { signOut } from "@/lib/auth-client";
 
 interface AuthProfileProps {
   user: User | undefined;
+  subscription: SubscriptionStatus | undefined;
 }
 
-export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
+export const AuthProfile: FC<AuthProfileProps> = ({ user, subscription }) => {
   const [pending, startTransition] = useTransition();
 
   const handleLogout = () => {
     startTransition(() => {
-      signOut();
+      signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            throw redirect({
+              to: "/login",
+              replace: true,
+            });
+          },
+        },
+      });
     });
   };
 
@@ -34,6 +45,13 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
     .map((name) => name[0])
     .join("")
     .slice(0, 2);
+
+  const currentPlan: Record<SubscriptionStatus, string> = {
+    FREE: "Free",
+    ACTIVE: "Active",
+    CANCELLED: "Cancelled",
+    PENDING: "Pending",
+  };
 
   return (
     <Popover>
@@ -44,7 +62,7 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
               src={user?.image ?? ""}
               alt={`Profile picture of ${user?.name}`}
             />
-            <AvatarFallback>{initials}</AvatarFallback>
+            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
           </Avatar>
           <div>
             <Paragraph className="pointer-events-none" variant="sub1">
@@ -57,13 +75,13 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
         </div>
       </PopoverTrigger>
       <PopoverContent className="space-y-2.5">
-        <div className="flex items-center space-x-4 rounded-md border border-border/20 bg-secondary p-3">
+        <div className="flex items-center space-x-4 rounded-md border border-border/20 bg-secondary px-3 py-2.5">
           <Avatar>
             <AvatarImage
               src={user?.image ?? ""}
               alt={`Profile picture of ${user?.name}`}
             />
-            <AvatarFallback>{initials}</AvatarFallback>
+            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
           </Avatar>
           <div>
             <Paragraph variant="sub1">{user?.name}</Paragraph>
@@ -77,7 +95,9 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user }) => {
 
         <div className="flex items-center justify-between">
           <Paragraph>Current plan:</Paragraph>
-          <Paragraph variant="xs">Free</Paragraph>
+          <Paragraph variant="xs">
+            {currentPlan[subscription ?? "FREE"]}
+          </Paragraph>
         </div>
 
         <Link to="/dashboard" className={paragraphVariants()}>

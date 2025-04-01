@@ -6,12 +6,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { getUserSubscriptionStatus } from "@/services/user";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
-  loader: async ({ context: { user } }) => {
+  loader: async ({ context: { user }, abortController: { signal } }) => {
+    const subscription = await getUserSubscriptionStatus({
+      data: {
+        userId: user?.id,
+      },
+      signal,
+    });
+
     return {
       role: user?.role,
+      subscription,
     };
   },
   beforeLoad: async ({ context }) => {
@@ -24,11 +33,11 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardLayout() {
-  const { role } = Route.useLoaderData();
+  const { role, subscription } = Route.useLoaderData();
 
   return (
     <SidebarProvider>
-      <DashboardSidebar role={role} />
+      <DashboardSidebar role={role} subscription={subscription} />
 
       <SidebarInset className="bg-secondary p-4 text-secondary-foreground">
         <SidebarTrigger />

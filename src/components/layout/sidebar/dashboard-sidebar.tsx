@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import type { Role } from "@prisma/client";
+import type { Role, SubscriptionStatus } from "@prisma/client";
 import { Link } from "@tanstack/react-router";
 
 import {
@@ -21,9 +21,13 @@ import { AuthProfile } from "./auth-profile";
 
 interface DashboardSidebarProps {
   role: Role | undefined;
+  subscription: SubscriptionStatus | undefined;
 }
 
-export const DashboardSidebar: FC<DashboardSidebarProps> = ({ role }) => {
+export const DashboardSidebar: FC<DashboardSidebarProps> = ({
+  role,
+  subscription,
+}) => {
   const { data: sessionData, isPending } = useSession();
 
   const links = sidebarLinks[role ?? "PHOTOGRAPHER"];
@@ -55,7 +59,9 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({ role }) => {
       </SidebarContent>
       <SidebarFooter>
         {isPending && <ProfileSkeleton />}
-        {sessionData?.user && <AuthProfile user={sessionData.user} />}
+        {sessionData?.user && (
+          <AuthProfile user={sessionData.user} subscription={subscription} />
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

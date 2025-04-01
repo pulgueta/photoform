@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,6 +39,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Heading, Paragraph } from "@/components/ui/typography";
+import { getUserSubscriptionStatus } from "@/services/user";
 
 type FormFieldType = {
   id: string;
@@ -71,11 +73,20 @@ const formBuilderSchema = z.object({
 
 export const Route = createFileRoute("/dashboard/new")({
   component: FormBuilder,
+  loader: async ({ context: { user } }) => ({
+    subscription: await getUserSubscriptionStatus({
+      data: {
+        userId: user?.id,
+      },
+    }),
+  }),
   pendingComponent: () => <div>Loading...</div>,
   ssr: false,
 });
 
 function FormBuilder() {
+  const { subscription } = Route.useLoaderData();
+
   const [fields, setFields] = useState<FormFieldType[]>([]);
   const [selectedField, setSelectedField] = useState<FormFieldType | null>(
     null,
@@ -104,6 +115,18 @@ function FormBuilder() {
     checkbox: <BadgeCheck />,
     image: <Image />,
   };
+
+  const freeUserFields: HTMLInputTypeAttribute[] = [
+    "text",
+    "textarea",
+    "radio",
+    "checkbox",
+  ] as const;
+
+  const proUserFields: HTMLInputTypeAttribute[] = [
+    ...freeUserFields,
+    "image",
+  ] as const;
 
   // Function to save the form to database (mocked)
   const handleSaveForm = (values: z.infer<typeof formBuilderSchema>) => {
@@ -208,27 +231,25 @@ function FormBuilder() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-2">
-              {(
-                [
-                  "text",
-                  "textarea",
-                  "dropdown",
-                  "radio",
-                  "checkbox",
-                  "image",
-                ] as const
-              ).map((type) => (
+              {proUserFields.map((type) => (
                 <Button
                   key={type}
                   variant="outline"
-                  className="flex h-full flex-col items-center justify-center gap-2"
+                  className="relative flex h-full flex-col items-center justify-center gap-2"
+                  disabled={
+                    subscription === "FREE" && !freeUserFields.includes(type)
+                  }
                   onClick={() => addField(type)}
                 >
                   {fieldIcons[type]}
-
                   <span className="text-base xl:text-xs">
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </span>
+
+                  {subscription === "FREE" &&
+                    !freeUserFields.includes(type) && (
+                      <Badge className="-left-2 absolute top-0">Pro</Badge>
+                    )}
                 </Button>
               ))}
             </div>

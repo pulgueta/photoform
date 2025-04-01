@@ -9,6 +9,22 @@ export default defineConfig({
     preset: "netlify",
   },
   vite: {
+    optimizeDeps: {
+      esbuildOptions: {
+        target: "esnext",
+        supported: {
+          "top-level-await": true,
+        },
+      },
+    },
+    build: {
+      target: "esnext",
+    },
+    esbuild: {
+      supported: {
+        "top-level-await": true,
+      },
+    },
     plugins: [
       tsConfigPaths({
         projects: ["./tsconfig.json"],

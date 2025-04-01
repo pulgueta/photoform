@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'PHOTOGRAPHER', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "SubscriptionStatus" AS ENUM ('ACTIVE', 'FREE', 'CANCELLED', 'PENDING');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
@@ -106,6 +109,18 @@ CREATE TABLE "form_field" (
     CONSTRAINT "form_field_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "subscription" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "status" "SubscriptionStatus" NOT NULL DEFAULT 'FREE',
+    "polarProductId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "subscription_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_id_key" ON "user"("id");
 
@@ -121,6 +136,12 @@ CREATE UNIQUE INDEX "form_id_key" ON "form"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "form_uuid_key" ON "form"("uuid");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "subscription_id_key" ON "subscription"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "subscription_userId_key" ON "subscription"("userId");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -135,3 +156,6 @@ ALTER TABLE "form" ADD CONSTRAINT "form_userId_fkey" FOREIGN KEY ("userId") REFE
 
 -- AddForeignKey
 ALTER TABLE "form_field" ADD CONSTRAINT "form_field_formId_fkey" FOREIGN KEY ("formId") REFERENCES "form"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "subscription" ADD CONSTRAINT "subscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

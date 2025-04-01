@@ -11,8 +11,8 @@ import {
 import { DefaultCatchBoundary } from "@/components/layout/error-boundary";
 import { NotFound } from "@/components/layout/not-found";
 import { queryKeys } from "@/constants/query-keys";
-import type { User } from "@/services/auth";
-import { getUser } from "@/services/auth";
+import type { User } from "@/services/user";
+import { getUser } from "@/services/user";
 import appCss from "@/styles/app.css?url";
 import { env } from "@/utils/env.server";
 import { seo } from "@/utils/seo";
