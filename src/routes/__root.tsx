@@ -42,6 +42,10 @@ export const Route = createRootRouteWithContext<RouteContext>()({
   head: () => ({
     meta: [
       {
+        httpEquiv: "Content-Security-Policy",
+        content: `script-src 'self' ${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://phorm.netlify.app;"}`,
+      },
+      {
         charSet: "utf-8",
       },
       {
