@@ -41,9 +41,9 @@ function DashboardLayout() {
       <DashboardSidebar user={user} subscription={subscription} />
 
       <SidebarInset className="bg-secondary p-4 text-secondary-foreground">
-        <SidebarTrigger />
-
         <FormBuilderProvider>
+          <SidebarTrigger />
+
           <Outlet />
         </FormBuilderProvider>
       </SidebarInset>

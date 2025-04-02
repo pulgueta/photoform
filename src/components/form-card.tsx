@@ -10,7 +10,6 @@ import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -26,7 +25,6 @@ export const FormCard: FC<FormCardProps> = ({ form }) => (
     <CardHeader className="flex flex-row items-start justify-between">
       <div>
         <CardTitle>{form.name}</CardTitle>
-        <CardDescription>{form.slug}</CardDescription>
       </div>
       <Button variant="destructive" size="icon">
         <XIcon className="size-4" />
@@ -34,7 +32,7 @@ export const FormCard: FC<FormCardProps> = ({ form }) => (
       </Button>
     </CardHeader>
     <CardContent className="flex items-center justify-between">
-      <Paragraph>{form.fields.length} fields</Paragraph>
+      <Paragraph>{form.id} fields</Paragraph>
 
       {!form.isAnswered && (
         <Button asChild variant="outline" size="sm">

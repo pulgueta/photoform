@@ -1,4 +1,5 @@
 import type { FC, HTMLInputTypeAttribute } from "react";
+import { useId } from "react";
 
 import type { Subscription } from "@prisma/client";
 import { BadgeCheck, ChevronDown, Image, Radio, Type } from "lucide-react";
@@ -14,26 +15,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { BuilderFormField } from "@/context/form-builder-context";
-import {
-  useFormBuilderActions,
-  useFormBuilderFields,
-} from "@/context/form-builder-context";
-
-type ActiveTab = "edit" | "preview";
+import { useFormBuilderActions } from "@/context/form-builder-context";
 
 interface BuilderTypesProps {
+  fields: BuilderFormField[];
   subscription: Subscription["status"] | undefined;
-  setActiveTab: (tab: ActiveTab) => void;
   setSelectedField: (field: BuilderFormField | null) => void;
 }
 
 export const BuilderTypes: FC<BuilderTypesProps> = ({
+  fields,
   subscription,
-  setActiveTab,
   setSelectedField,
 }) => {
-  const fields = useFormBuilderFields();
+  const id = useId();
   const { addField, removeAllFields } = useFormBuilderActions();
+  const actions = useFormBuilderActions();
 
   const isFreeSubscription = subscription === "FREE";
 
@@ -58,11 +55,11 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
   };
 
   const handleAddField = (type: BuilderFormField["type"]) => {
-    const newField: BuilderFormField = {
-      id: `field-${Date.now()}`,
-      name: `field-${Date.now()}`,
+    const newField = {
+      id: `field-${id}-${Date.now()}`,
+      name: `field-${id}`,
       type,
-      label: `New ${type} Field`,
+      label: `New ${type} field`,
       required: false,
       ...(type === "dropdown" || type === "radio"
         ? { options: ["Option 1"] }
@@ -83,17 +80,15 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
     };
     addField(newField);
     setSelectedField(newField);
-    setActiveTab("edit");
   };
 
   const handleClearForm = () => {
     removeAllFields();
     setSelectedField(null);
-    setActiveTab("preview");
   };
 
   return (
-    <Card className="w-full flex-shrink-0 md:row-span-1 lg:col-span-1 lg:w-full">
+    <Card className="w-full flex-shrink-0 lg:w-full">
       <CardHeader>
         <CardTitle>Field types</CardTitle>
         <CardDescription>

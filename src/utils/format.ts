@@ -11,7 +11,8 @@ const maxTimes: [number, Intl.RelativeTimeFormatUnit][] = [
 export function timeAgo(date: Date) {
   let duration = (date.getTime() - Date.now()) / 1000;
 
-  const [, unit] = maxTimes.find(([amt]) => {
+  // @ts-expect-error
+  const [_, unit] = maxTimes.find(([amt]) => {
     if (Math.abs(duration) < amt) {
       return true;
     }

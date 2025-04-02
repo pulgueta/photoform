@@ -117,7 +117,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const pathname = routerState.location.pathname;
 
   const showNavbar =
-    !pathname.startsWith("/dashboard") || !pathname.startsWith("/form");
+    pathname.startsWith("/dashboard") || pathname.startsWith("/form");
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -125,7 +125,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-manrope">
-        {showNavbar && <Navbar user={user} />}
+        {!showNavbar && <Navbar user={user} />}
 
         {children}
 

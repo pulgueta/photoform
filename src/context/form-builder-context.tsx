@@ -2,8 +2,8 @@ import type { FC, HTMLInputTypeAttribute, PropsWithChildren } from "react";
 import { createContext, useContext, useState } from "react";
 
 import type { StoreApi } from "zustand";
+import { useStore } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { useStore } from "zustand/react";
 import { createStore } from "zustand/vanilla";
 
 export interface BuilderFormField {
@@ -25,10 +25,12 @@ interface BuilderActions {
   updateField: (field: BuilderFormField) => void;
   removeField: (field: BuilderFormField) => void;
   removeAllFields: () => void;
+  selectField: (field: BuilderFormField | null) => void;
 }
 
 interface Builder {
   fields: BuilderFormField[];
+  selectedField: BuilderFormField | null;
   actions: BuilderActions;
 }
 
@@ -46,6 +48,7 @@ export const FormBuilderProvider: FC<FormBuilderProviderProps> = ({
       persist(
         (set) => ({
           fields: [],
+          selectedField: null,
           actions: {
             addField: (field) =>
               set((state) => ({
@@ -62,6 +65,10 @@ export const FormBuilderProvider: FC<FormBuilderProviderProps> = ({
                 fields: state.fields.filter((f) => f.id !== field.id),
               })),
             removeAllFields: () => set({ fields: [] }),
+            selectField: (field) =>
+              set(() => ({
+                selectedField: field,
+              })),
           },
         }),
         {
@@ -101,4 +108,11 @@ export function useFormBuilderFields() {
 
 export function useFormBuilderActions() {
   return useFormBuilderStore((state) => state.actions);
+}
+
+export function useFormBuilderField() {
+  return useFormBuilderStore((state) => ({
+    selectedField: state.selectedField,
+    selectField: state.actions.selectField,
+  }));
 }
