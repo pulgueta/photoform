@@ -59,6 +59,7 @@ export const Route = createRootRouteWithContext<RouteContext>()({
         title: "Phormat - Elevate your photoshoots with AI recommendations",
         description:
           "Create AI portraits and get tips and recommendations for your next photoshoots with your clients.",
+        image: "/og.png",
         keywords: "AI, photoshoots, recommendations, portraits",
       }),
     ],
@@ -75,8 +76,20 @@ export const Route = createRootRouteWithContext<RouteContext>()({
         sizes: "196x196",
         href: "/favicon-196.png",
       },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
       { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
-      { rel: "icon", href: "/favicon-196.png", type: "image/png" },
+      { rel: "icon", href: "/favicon.ico" },
     ],
   }),
   errorComponent: (props) => {
