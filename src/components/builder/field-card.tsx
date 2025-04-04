@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { useId } from "react";
 
 import { Trash2Icon } from "lucide-react";
 
@@ -29,9 +28,9 @@ export const FieldCard: FC<FieldCardProps> = ({
       })}
       onClick={() => handleFieldClick(field)}
     >
-      <CardContent className="flex items-center justify-between p-3">
-        <div className="min-w-0 truncate">
-          <Paragraph className="truncate">{field.label}</Paragraph>
+      <CardContent className="flex flex-col items-center justify-between gap-2 p-2.5 lg:flex-row">
+        <div className="w-full">
+          <Paragraph className="line-clamp-1 truncate">{field.label}</Paragraph>
           <Paragraph muted variant="xs">
             {field.type} {field.required && "• Required"}
           </Paragraph>
@@ -40,6 +39,7 @@ export const FieldCard: FC<FieldCardProps> = ({
         <Button
           size="icon"
           variant="destructive"
+          className="w-full lg:w-7"
           onClick={(e) => {
             e.stopPropagation();
             handleDeleteField(field.id);

@@ -1,6 +1,8 @@
-import { useId, useState } from "react";
-
-import { createFileRoute } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { generateSlug } from "random-word-slugs";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { BuilderTypes } from "@/components/builder/builder-types";
 import { FieldCard } from "@/components/builder/field-card";
@@ -20,17 +22,21 @@ import {
   useFormBuilderActions,
   useFormBuilderFields,
 } from "@/context/form-builder-context";
+import { createForm, createFormFn } from "@/services/form";
 import { getUserSubscriptionStatus } from "@/services/user";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/new")({
   component: FormBuilder,
-  loader: async ({ context: { user } }) => ({
-    subscription: await getUserSubscriptionStatus({
+  loader: async ({ context: { user } }) => {
+    const subscription = await getUserSubscriptionStatus({
       data: {
         userId: user?.id,
       },
-    }),
-  }),
+    });
+
+    return { subscription, userId: user?.id };
+  },
   pendingComponent: () => (
     <div className="p-4">
       <Paragraph muted>Loading builder...</Paragraph>
@@ -43,10 +49,48 @@ function FormBuilder() {
     null,
   );
 
-  const { subscription } = Route.useLoaderData();
+  const { subscription, userId } = Route.useLoaderData();
+  const navigate = useNavigate();
 
   const fields = useFormBuilderFields();
   const { updateField, removeField } = useFormBuilderActions();
+
+  const saveMutation = useMutation({
+    mutationFn: async ({ isDraft }: { isDraft: boolean }) => {
+      if (!userId) {
+        throw new Error("You must be logged in to save a form");
+      }
+
+      if (fields.length === 0) {
+        throw new Error("Please add at least one field to save the form");
+      }
+
+      const formData = {
+        fields,
+        isDraft,
+        responses: [],
+        name: generateSlug(),
+        userId,
+        isPublished: !isDraft,
+        isAnswered: false,
+      };
+
+      const formId = await createFormFn({ data: formData });
+
+      return formId;
+    },
+    onSuccess: (formId) => {
+      toast.success("Form saved successfully");
+      navigate({ to: "/dashboard" });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSaveForm = async (isDraft: boolean) => {
+    saveMutation.mutate({ isDraft });
+  };
 
   const handleUpdateField = (updatedField: BuilderFormField) => {
     if (
@@ -90,8 +134,17 @@ function FormBuilder() {
           setSelectedField={setSelectedField}
         />
 
-        <div className="flex flex-col gap-2">
-          <PreviewDialog fields={fields} />
+        <div className="col-span-2 flex flex-col gap-2 lg:col-span-1">
+          <div className="flex justify-between gap-2">
+            <PreviewDialog fields={fields} />
+            <Button
+              variant="outline"
+              onClick={() => handleSaveForm(true)}
+              disabled={fields.length === 0 || saveMutation.isPending}
+            >
+              Save as draft
+            </Button>
+          </div>
 
           {fields.length === 0 ? (
             <div className="col-span-3 rounded-lg border border-dashed p-4 text-center">
@@ -100,7 +153,7 @@ function FormBuilder() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2">
               {fields.map((field) => (
                 <FieldCard
                   key={field.id}

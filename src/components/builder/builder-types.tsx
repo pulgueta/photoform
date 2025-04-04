@@ -55,7 +55,7 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
   };
 
   const handleAddField = (type: BuilderFormField["type"]) => {
-    const newField = {
+    const newField: BuilderFormField = {
       id: `field-${id}-${Date.now()}`,
       name: `field-${id}`,
       type,
@@ -76,7 +76,6 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
             maxFileSizeMB: 5,
           }
         : {}),
-      requiredMessage: undefined,
     };
     addField(newField);
     setSelectedField(newField);
@@ -88,7 +87,7 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
   };
 
   return (
-    <Card className="w-full flex-shrink-0 lg:w-full">
+    <Card className="col-span-2 w-full flex-shrink-0 lg:col-span-1 lg:w-full">
       <CardHeader>
         <CardTitle>Field types</CardTitle>
         <CardDescription>
@@ -106,7 +105,7 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
               onClick={() => handleAddField(type)}
             >
               {fieldIcons[type]}
-              <span className="text-base xl:text-xs">
+              <span className="text-xs">
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </span>
 
@@ -117,7 +116,11 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
           ))}
         </div>
       </CardContent>
-      <CardFooter className="flex-col gap-y-2">
+      <CardFooter className="flex-col gap-2">
+        <Button fullWidth disabled={fields.length === 0}>
+          Save form
+        </Button>
+
         <Button
           fullWidth
           variant="destructive"
@@ -126,17 +129,6 @@ export const BuilderTypes: FC<BuilderTypesProps> = ({
         >
           Clear form
         </Button>
-
-        {/* <Form {...formPreview}>
-          <form className="w-full">
-            <Button
-              fullWidth
-              disabled={!formPreview.formState.isValid || fields.length === 0}
-            >
-              Save form
-            </Button>
-          </form>
-        </Form> */}
       </CardFooter>
     </Card>
   );

@@ -3,31 +3,63 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateSlug } from "random-word-slugs";
 
 import { app_url } from "@/constants/keys";
+import type { BuilderFormField } from "@/context/form-builder-context";
+import type { Form } from "@/generated";
 import { authMiddleware } from "@/middlewares/auth";
-import type { ParsedForm } from "@/schemas/response";
-import { formResponseSchema } from "@/schemas/response";
 import { prisma } from "@/utils/prisma";
 
-async function createForm(data: ParsedForm) {
+type ParsedFormField = Pick<BuilderFormField, "label" | "required"> & {
+  type: string;
+};
+
+interface ParsedForm extends Form {
+  fields: ParsedFormField[];
+}
+
+export async function createForm(data: ParsedForm) {
   const formUUID = crypto.randomUUID();
   const shareUrl = `${app_url}/form/${formUUID}`;
-
-  const responses = formResponseSchema.safeParse(data.responses);
-
-  if (!responses.success) {
-    throw new Error("Invalid responses");
-  }
 
   const form = await prisma.form.create({
     data: {
       name: generateSlug(),
       uuid: formUUID,
       shareUrl,
-      responses,
+
+      isDraft: data.isDraft ?? true,
+      isPublished: !data.isDraft,
+      fields: {
+        create: data.fields?.map((field) => ({
+          label: field.label,
+          fieldType: field.type,
+          required: field.required,
+        })),
+      },
       User: {
         connect: {
           id: data.userId,
         },
+      },
+    },
+  });
+
+  return form.uuid;
+}
+
+export async function updateForm(formId: string, data: Partial<ParsedForm>) {
+  const form = await prisma.form.update({
+    where: {
+      id: formId,
+    },
+    data: {
+      isDraft: data.isDraft,
+      isPublished: !data.isDraft,
+      fields: {
+        create: data.fields?.map((field) => ({
+          label: field.label,
+          fieldType: field.type,
+          required: field.required,
+        })),
       },
     },
   });
@@ -40,7 +72,6 @@ export const createFormFn = createServerFn({ method: "POST" })
   .validator((data: ParsedForm) => data)
   .handler(async ({ data }) => {
     const form = await createForm(data);
-
     return form;
   });
 
@@ -49,15 +80,15 @@ async function getPhotographerForms(photographerId: User["id"]) {
     where: {
       userId: photographerId,
     },
+    include: {
+      FormResponses: true,
+    },
     cacheStrategy: {
       ttl: 60,
     },
   });
 
-  return forms.map((form) => ({
-    ...form,
-    responses: formResponseSchema.parse(form.responses),
-  }));
+  return forms;
 }
 
 export const getPhotographerFormsFn = createServerFn()

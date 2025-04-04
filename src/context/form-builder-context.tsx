@@ -3,7 +3,6 @@ import { createContext, useContext, useState } from "react";
 
 import type { StoreApi } from "zustand";
 import { useStore } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
 
 export interface BuilderFormField {
@@ -15,7 +14,6 @@ export interface BuilderFormField {
   acceptedFileTypes?: string;
   maxFileSizeMB?: number;
   required?: boolean;
-  requiredMessage?: boolean extends true ? string : never;
   options?: string[];
   isMultiSelect?: boolean;
 }
@@ -44,39 +42,29 @@ export const FormBuilderProvider: FC<FormBuilderProviderProps> = ({
   children,
 }) => {
   const [store] = useState<StoreApi<Builder>>(() =>
-    createStore<Builder>()(
-      persist(
-        (set) => ({
-          fields: [],
-          selectedField: null,
-          actions: {
-            addField: (field) =>
-              set((state) => ({
-                fields: [...state.fields, field],
-              })),
-            updateField: (field) =>
-              set((state) => ({
-                fields: state.fields.map((f) =>
-                  f.id === field.id ? field : f,
-                ),
-              })),
-            removeField: (field) =>
-              set((state) => ({
-                fields: state.fields.filter((f) => f.id !== field.id),
-              })),
-            removeAllFields: () => set({ fields: [] }),
-            selectField: (field) =>
-              set(() => ({
-                selectedField: field,
-              })),
-          },
-        }),
-        {
-          name: "form-builder",
-          storage: createJSONStorage(() => sessionStorage),
-        },
-      ),
-    ),
+    createStore<Builder>()((set) => ({
+      fields: [],
+      selectedField: null,
+      actions: {
+        addField: (field) =>
+          set((state) => ({
+            fields: [...state.fields, field],
+          })),
+        updateField: (field) =>
+          set((state) => ({
+            fields: state.fields.map((f) => (f.id === field.id ? field : f)),
+          })),
+        removeField: (field) =>
+          set((state) => ({
+            fields: state.fields.filter((f) => f.id !== field.id),
+          })),
+        removeAllFields: () => set({ fields: [] }),
+        selectField: (field) =>
+          set(() => ({
+            selectedField: field,
+          })),
+      },
+    })),
   );
 
   return (

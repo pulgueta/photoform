@@ -5,6 +5,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider = "zod-prisma-types"
+  output   = "../src/generated"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -96,15 +101,16 @@ model Form {
   uuid        String      @unique @default(uuid())
   name        String
   fields      FormField[]
-  responses   Json
   isPublished Boolean     @default(false)
   isAnswered  Boolean     @default(false)
+  isDraft     Boolean     @default(true)
   shareUrl    String
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  User   User   @relation(fields: [userId], references: [id])
-  userId String
+  User          User           @relation(fields: [userId], references: [id])
+  userId        String
+  FormResponses FormResponse[]
 
   @@map("form")
 }
@@ -118,6 +124,18 @@ model FormField {
   formId    String
 
   @@map("form_field")
+}
+
+model FormResponse {
+  id        String   @id @default(uuid())
+  formId    String
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+
+  form Form @relation(fields: [formId], references: [id])
+
+  @@map("form_response")
 }
 
 model Subscription {

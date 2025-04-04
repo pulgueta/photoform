@@ -7,6 +7,7 @@ import type { User } from "better-auth";
 import { LogOutIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -63,6 +64,7 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user, subscription }) => {
               alt={`Profile picture of ${user?.name}`}
             />
             <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <Badge>Pro</Badge>
           </Avatar>
           <div>
             <Paragraph className="pointer-events-none" variant="sub1">
@@ -75,28 +77,10 @@ export const AuthProfile: FC<AuthProfileProps> = ({ user, subscription }) => {
         </div>
       </PopoverTrigger>
       <PopoverContent className="space-y-2.5">
-        <div className="flex items-center space-x-4 rounded-md border border-border/20 bg-secondary px-3 py-2.5">
-          <Avatar>
-            <AvatarImage
-              src={user?.image ?? ""}
-              alt={`Profile picture of ${user?.name}`}
-            />
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-          </Avatar>
-          <div>
-            <Paragraph variant="sub1">{user?.name}</Paragraph>
-            <Paragraph muted variant="xs">
-              {user?.email}
-            </Paragraph>
-          </div>
-        </div>
-
-        <Separator className="bg-background/20" />
-
         <div className="flex items-center justify-between">
           <Paragraph>Current plan:</Paragraph>
           <Paragraph variant="xs">
-            {currentPlan[subscription ?? "FREE"]}
+            {currentPlan[subscription ?? "PENDING"]}
           </Paragraph>
         </div>
 

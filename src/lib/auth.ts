@@ -47,6 +47,14 @@ const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
+  session: {
+    expiresIn: 86400,
+    updateAge: 3600,
+    cookieCache: {
+      enabled: true,
+      maxAge: 300,
+    },
+  },
   plugins: [
     passkey(),
     oneTap(),

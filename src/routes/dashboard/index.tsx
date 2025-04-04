@@ -1,12 +1,14 @@
+import { Suspense } from "react";
+
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { Await, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { FormsGrid } from "@/components/forms-grid";
 import { FormsSkeleton } from "@/components/layout/skeleton/forms-skeleton";
+
 import { Heading, Paragraph } from "@/components/ui/typography";
 import { queryKeys } from "@/constants/query-keys";
 import { getPhotographerFormsFn } from "@/services/form";
-import { Suspense } from "react";
 
 const formsQueryOptions = () =>
   queryOptions({
@@ -18,6 +20,13 @@ export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
   loader: async ({ context }) => {
     await context.queryClient.prefetchQuery(formsQueryOptions());
+  },
+  beforeLoad: ({ context: { user } }) => {
+    if (!user) {
+      throw redirect({
+        to: "/login",
+      });
+    }
   },
 });
 
