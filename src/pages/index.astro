@@ -1,11 +1,402 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
+import { Button } from "../components/ui/react/button";
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Photoform - AI-Powered Photography Forms">
+  <section class="py-48 px-4 bg-gradient-to-b from-purple-50 to-white">
+    <div class="container mx-auto text-center">
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold">
+        Connect deeper with your photography clients
+      </h1>
+      <p class="text-muted-foreground my-8 md:text-lg">
+        Create dynamic forms that help you understand your clients better and
+        generate AI-powered portraits based on their responses.
+      </p>
+
+      <Button className="w-full max-w-32 mx-auto">
+        <a href="#">Start for free</a>
+      </Button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl font-bold text-center mb-4">
+        Everything You Need to Connect
+      </h2>
+      <p
+        class="text-muted-foreground my-8 md:text-lg max-w-prose text-center mx-auto"
+      >
+        From customizable forms and AI-powered portrait generation to
+        comprehensive client management, Photoform provides all the tools you
+        need to create meaningful connections with your clients.
+      </p>
+      <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+        <div
+          class="bg-gradient-to-t from-purple-50/50 via-white to-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[420px] flex flex-col items-center text-center"
+        >
+          <div
+            class="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 mt-8"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-secondary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold mb-4">Dynamic Forms</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Create personalized questionnaires that capture the essence of your
+            clients' vision. Our dynamic forms adapt to their responses,
+            ensuring you gather all the crucial details needed for their perfect
+            photoshoot.
+          </p>
+        </div>
+        <div
+          class="bg-gradient-to-br from-white via-white to-blue-50/50 p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[420px] flex flex-col items-center text-center"
+        >
+          <div
+            class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 mt-8"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold mb-4">AI Portrait Generation</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Transform client responses into stunning AI-generated portraits that
+            capture their personality. Our advanced AI understands their
+            preferences and creates unique visualizations that serve as
+            inspiration for your photoshoot.
+          </p>
+        </div>
+        <div
+          class="bg-gradient-to-bl from-white via-white to-purple-50/50 p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[420px] flex flex-col items-center text-center"
+        >
+          <div
+            class="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300 mt-8"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-secondary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold mb-4">Client Management</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Keep all your client interactions organized in one place. Track
+            responses, manage generated portraits, and maintain a seamless
+            workflow from initial questionnaire to final photoshoot delivery.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Section -->
+  <section id="how-it-works" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl font-bold text-center mb-16">How It Works</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div
+            class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold"
+          >
+            1
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Create Your Form</h3>
+          <p class="text-gray-600">
+            Design custom forms with questions that help you understand your
+            clients better.
+          </p>
+        </div>
+        <div class="text-center">
+          <div
+            class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold"
+          >
+            2
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Share with Clients</h3>
+          <p class="text-gray-600">
+            Send your form to clients and collect their responses and photos.
+          </p>
+        </div>
+        <div class="text-center">
+          <div
+            class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold"
+          >
+            3
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Generate AI Portraits</h3>
+          <p class="text-gray-600">
+            Let our AI create unique portraits based on client responses.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="py-20">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl font-bold text-center mb-16">Choose Your Plan</h2>
+      <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div class="bg-white p-8 rounded-xl shadow-lg border">
+          <h3 class="text-2xl font-bold mb-4">Free</h3>
+          <p class="text-4xl font-bold mb-6">
+            $0<span class="text-gray-500 text-lg font-normal">/month</span>
+          </p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              1 Form Template
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Basic Input Types
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              5 AI Portraits/month
+            </li>
+          </ul>
+          <a
+            href="#"
+            class="block text-center bg-gray-100 text-gray-800 px-6 py-3 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
+        <div
+          class="bg-gradient-to-br from-primary to-secondary p-8 rounded-xl shadow-lg text-white transform scale-105"
+        >
+          <h3 class="text-2xl font-bold mb-4">Pro</h3>
+          <p class="text-4xl font-bold mb-6">
+            $29<span class="text-gray-100 text-lg font-normal">/month</span>
+          </p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-white mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Unlimited Forms
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-white mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Advanced Input Types
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-white mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              50 AI Portraits/month
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-white mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Client Photo Upload
+            </li>
+          </ul>
+          <a
+            href="#"
+            class="block text-center bg-white text-primary px-6 py-3 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-lg border">
+          <h3 class="text-2xl font-bold mb-4">Business</h3>
+          <p class="text-4xl font-bold mb-6">
+            $79<span class="text-gray-500 text-lg font-normal">/month</span>
+          </p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Everything in Pro
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              200 AI Portraits/month
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Priority Support
+            </li>
+            <li class="flex items-center">
+              <svg
+                class="w-5 h-5 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              Custom Branding
+            </li>
+          </ul>
+          <a
+            href="#"
+            class="block text-center bg-gray-100 text-gray-800 px-6 py-3 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 bg-radial from-fuchsia-100 to-fuchsia-50">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold">
+        Ready to take your photography business to the next level?
+      </h2>
+      <p class="my-8 text-muted-foreground">
+        Start creating deeper connections with your clients today.
+      </p>
+      <Button size="lg">
+        <a href="#">Start for free</a>
+      </Button>
+    </div>
+  </section>
 </Layout>

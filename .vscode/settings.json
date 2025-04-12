@@ -1,8 +1,5 @@
 {
   "editor.wordWrap": "on",
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -15,6 +12,9 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  },
   "editor.codeActionsOnSave": {
     "quickfix.biome": "always",
     "source.organizeImports.biome": "always"
@@ -26,7 +26,7 @@
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "tailwindCSS.codeLens": true,
-  "tailwindCSS.experimental.configFile": "src/styles/globals.css",
+  "tailwindCSS.experimental.configFile": "src/styles/global.css",
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]

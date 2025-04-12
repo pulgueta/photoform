@@ -1,0 +1,35 @@
+---
+import { UserIcon } from "lucide-react";
+
+import { Button } from "../components/ui/react/button";
+
+const links = [
+  { href: "#features", label: "Features" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#pricing", label: "Pricing" },
+];
+
+const user = await Astro.session?.get("user");
+const userBtnHref = user ? "/dashboard" : "/login";
+---
+
+<nav class="fixed w-full bg-white/80 backdrop-blur-md z-50 py-4">
+  <div class="container mx-auto px-4 flex justify-between items-center">
+    <a class="text-xl font-bold" href="/">Photoform</a>
+    <div class="hidden md:flex gap-8">
+      {
+        links.map((link) => (
+          <Button variant="ghost" key={link.href}>
+            <a href={link.href}>{link.label}</a>
+          </Button>
+        ))
+      }
+    </div>
+    <Button variant="outline">
+      {user && <UserIcon />}
+      <a href={userBtnHref}>
+        {user ? "unDeFineD" : "Login"}
+      </a>
+    </Button>
+  </div>
+</nav>
