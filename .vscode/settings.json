@@ -1,14 +1,5 @@
 {
   "editor.wordWrap": "on",
-  "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
-  },
-  "search.exclude": {
-    "**/routeTree.gen.ts": true
-  },
-  "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
-  },
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -35,7 +26,7 @@
   "prettier.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "tailwindCSS.codeLens": true,
-  "tailwindCSS.experimental.configFile": "src/styles/app.css",
+  "tailwindCSS.experimental.configFile": "src/styles/globals.css",
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
